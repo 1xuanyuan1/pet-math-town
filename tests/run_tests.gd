@@ -44,6 +44,11 @@ func _test_content() -> void:
 	invalid["session"]["difficulty_levels"][0]["maximum"] = 11
 	var invalid_errors: PackedStringArray = repository_script.validate_count_feeding(invalid)
 	_check(not invalid_errors.is_empty(), "超出 1–10 的范围必须被拒绝")
+	var profile: Dictionary = repository_script.load_json_file("res://content/player_profile.json")
+	var profile_errors: PackedStringArray = repository_script.validate_player_profile(profile)
+	_check(profile_errors.is_empty(), "玩家称呼配置应通过校验：%s" % ", ".join(profile_errors))
+	_check(ContentRepository.child_name_audio_id("香香") == "common.name_xiangxiang", "香香应命中内置名字音频")
+	_check(ContentRepository.child_name_audio_id("自定义名字") == "common.name_default", "未知名字应回退默认音频")
 
 
 func _test_question_generator() -> void:
@@ -70,7 +75,7 @@ func _test_tts_manifests() -> void:
 	var registry: Dictionary = JSON.parse_string(registry_file.get_as_text())
 	var items: Array = manifest.get("items", [])
 	_check(items.size() == 25, "首版 TTS 清单应包含 25 条语音")
-	_check(registry.size() == items.size(), "Godot 音频注册表应覆盖全部正式语音")
+	_check(registry.size() == items.size() + 3, "Godot 音频注册表应覆盖正式语音与个性化片段")
 	var seen_ids := {}
 	for item_value in items:
 		var item: Dictionary = item_value
@@ -89,6 +94,13 @@ func _test_tts_manifests() -> void:
 	for sample_value in sample_items:
 		var sample: Dictionary = sample_value
 		_check(str(sample.get("text")) == sample_text, "三音色试听必须使用相同文案")
+	var personalization_file := FileAccess.open("res://audio/tts/personalization.json", FileAccess.READ)
+	var personalization: Dictionary = JSON.parse_string(personalization_file.get_as_text())
+	var personalization_items: Array = personalization.get("items", [])
+	_check(personalization_items.size() == 3, "个性化 TTS 应包含默认名字、香香和欢迎后半句")
+	_check(registry.has("common.name_default"), "注册表应包含默认名字")
+	_check(registry.has("common.name_xiangxiang"), "注册表应包含香香")
+	_check(registry.has("count_feeding.intro"), "注册表应包含欢迎后半句")
 
 
 func _test_progress_store() -> void:
@@ -107,6 +119,10 @@ func _test_progress_store() -> void:
 	_check(int(second_store.data.get("rounds_completed")) == 1, "应恢复完成回合数")
 	_check(int(second_store.data.get("sessions_completed")) == 1, "应恢复完成局数")
 	_check(second_store.data.get("last_played_game") == "count_feeding", "应恢复最后游戏")
+	_check(second_store.get_child_name() == "小宝贝", "默认小主人称呼应为小宝贝")
+	_check(second_store.set_child_name("香香", false) == "香香", "应支持设置香香")
+	_check(second_store.set_child_name("", false) == "小宝贝", "空名字应回退小宝贝")
+	_check(second_store.set_child_name("一二三四五六七八九", false).length() == 8, "自定义名字最长八个字符")
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(test_path))
 	first_store.free()
 	second_store.free()

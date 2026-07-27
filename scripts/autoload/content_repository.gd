@@ -1,6 +1,7 @@
 extends Node
 
 const COUNT_FEEDING_PATH := "res://content/math/grade1_sem1/count_feeding.json"
+const PLAYER_PROFILE_PATH := "res://content/player_profile.json"
 
 var _configs: Dictionary = {}
 var validation_errors: PackedStringArray = []
@@ -24,10 +25,30 @@ func reload() -> void:
 	else:
 		for message in errors:
 			push_error(message)
+	var profile := load_json_file(PLAYER_PROFILE_PATH)
+	var profile_errors := validate_player_profile(profile)
+	validation_errors.append_array(profile_errors)
+	if profile_errors.is_empty():
+		_configs[profile["id"]] = profile
+	else:
+		for message in profile_errors:
+			push_error(message)
 
 
 func get_game_config(game_id: String) -> Dictionary:
 	return _configs.get(game_id, {}).duplicate(true)
+
+
+func get_player_profile_config() -> Dictionary:
+	return _configs.get("player_profile", {}).duplicate(true)
+
+
+func child_name_audio_id(display_name: String) -> String:
+	var profile := get_player_profile_config()
+	for preset_value in profile.get("bundled_names", []):
+		if preset_value is Dictionary and str(preset_value.get("display_name")) == display_name:
+			return str(preset_value.get("audio_id"))
+	return str(profile.get("fallback_audio_id", "common.name_default"))
 
 
 static func load_json_file(path: String) -> Dictionary:
@@ -79,4 +100,38 @@ static func validate_count_feeding(config: Dictionary) -> PackedStringArray:
 		for key in ["intro", "target_template", "short_target_template", "retry", "complete"]:
 			if str(prompts_value.get(key, "")).strip_edges().is_empty():
 				errors.append("提示语 %s 不能为空" % key)
+	return errors
+
+
+static func validate_player_profile(config: Dictionary) -> PackedStringArray:
+	var errors := PackedStringArray()
+	if int(config.get("schema_version", 0)) != 1:
+		errors.append("player_profile.schema_version 必须为 1")
+	if config.get("id", "") != "player_profile":
+		errors.append("player_profile.id 不正确")
+	if str(config.get("default_name", "")).strip_edges().is_empty():
+		errors.append("player_profile.default_name 不能为空")
+	var maximum := int(config.get("maximum_name_characters", 0))
+	if maximum < 1 or maximum > 16:
+		errors.append("player_profile.maximum_name_characters 必须位于 1–16")
+	if str(config.get("fallback_audio_id", "")).strip_edges().is_empty():
+		errors.append("player_profile.fallback_audio_id 不能为空")
+	var bundled_value: Variant = config.get("bundled_names")
+	if not bundled_value is Array or bundled_value.is_empty():
+		errors.append("player_profile.bundled_names 不能为空")
+		return errors
+	var names := {}
+	for item_value in bundled_value:
+		if not item_value is Dictionary:
+			errors.append("内置名字必须是对象")
+			continue
+		var display_name := str(item_value.get("display_name", "")).strip_edges()
+		var audio_id := str(item_value.get("audio_id", "")).strip_edges()
+		if display_name.is_empty() or audio_id.is_empty():
+			errors.append("内置名字和 audio_id 不能为空")
+		if names.has(display_name):
+			errors.append("内置名字不能重复：%s" % display_name)
+		names[display_name] = true
+	if not names.has(str(config.get("default_name"))):
+		errors.append("默认名字必须位于 bundled_names 中")
 	return errors

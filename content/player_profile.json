@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "id": "player_profile",
+  "default_name": "小宝贝",
+  "maximum_name_characters": 8,
+  "fallback_audio_id": "common.name_default",
+  "bundled_names": [
+    {"display_name": "小宝贝", "audio_id": "common.name_default"},
+    {"display_name": "香香", "audio_id": "common.name_xiangxiang"}
+  ]
+}
+

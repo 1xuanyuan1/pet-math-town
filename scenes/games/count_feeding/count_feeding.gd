@@ -7,6 +7,7 @@ var _target_count := 1
 var _selected_sources: Array[int] = []
 var _supply_buttons: Array[CarrotButton] = []
 var _round_locked := false
+var _play_greeting_on_next_round := true
 
 var _progress_dots: ProgressDots
 var _mascot: MascotView
@@ -237,6 +238,7 @@ func _start_session() -> void:
 		ProgressStore.session_seed()
 	)
 	_round_index = 0
+	_play_greeting_on_next_round = true
 	_progress_dots.round_count = _sequence.size()
 	_progress_dots.completed = 0
 	_begin_round()
@@ -253,7 +255,7 @@ func _begin_round() -> void:
 	for carrot in _supply_buttons:
 		carrot.unavailable = false
 	_rebuild_basket()
-	call_deferred("_play_current_prompt")
+	call_deferred("_play_round_prompt")
 
 
 func _on_supply_pressed(source_index: int) -> void:
@@ -338,6 +340,23 @@ func _play_current_prompt() -> void:
 	var template := str(_config.get("prompts", {}).get("target_template", "请放进%d根胡萝卜。"))
 	var prompt := template % _target_count
 	AudioManager.play_prompt("count_feeding.target_%02d" % _target_count, prompt)
+	_pulse_control(_target_card)
+	_restart_idle_timer()
+
+
+func _play_round_prompt() -> void:
+	if not _play_greeting_on_next_round:
+		_play_current_prompt()
+		return
+	_play_greeting_on_next_round = false
+	var child_name := ProgressStore.get_child_name()
+	var name_audio_id := ContentRepository.child_name_audio_id(child_name)
+	var template := str(_config.get("prompts", {}).get("target_template", "请放进%d根胡萝卜。"))
+	var target_prompt := template % _target_count
+	AudioManager.play_sequence(
+		[name_audio_id, "count_feeding.intro", "count_feeding.target_%02d" % _target_count],
+		"%s，来帮米米准备胡萝卜吧！%s" % [child_name, target_prompt]
+	)
 	_pulse_control(_target_card)
 	_restart_idle_timer()
 
