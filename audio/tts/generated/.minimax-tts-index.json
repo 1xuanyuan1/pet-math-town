@@ -486,6 +486,96 @@
       "trace_id": "06b6459116190743bf8c3c9cd5c748e1",
       "usage_characters": 30
     },
+    "make_ten/complete.ogg": {
+      "audio_length_ms": 2772,
+      "audio_size_bytes": 30825,
+      "generated_at": "2026-07-27T09:53:59.890503+00:00",
+      "id": "complete",
+      "request_sha256": "c9be12f8ba62e91d099644b24135bcb26484fe728d8dcd7c9c9700d4c642f66c",
+      "trace_id": "06b65db7e254eeb1dfcfca7bbf2b1cf8",
+      "usage_characters": 15
+    },
+    "make_ten/correct.ogg": {
+      "audio_length_ms": 1620,
+      "audio_size_bytes": 19043,
+      "generated_at": "2026-07-27T09:53:59.101960+00:00",
+      "id": "correct",
+      "request_sha256": "1ebcd15192202f278728c910c191efff6b4469dd059e31a5463cbce2136bb4a2",
+      "trace_id": "06b65db6a5a0c5b239868c5e6c0910f5",
+      "usage_characters": 9
+    },
+    "make_ten/count_outside.ogg": {
+      "audio_length_ms": 2952,
+      "audio_size_bytes": 31300,
+      "generated_at": "2026-07-27T09:53:57.627853+00:00",
+      "id": "count_outside",
+      "request_sha256": "04557822f4ecb3daf6828d7d515292acbe815d442af22786afc57c65ecebf6b5",
+      "trace_id": "06b65db502f95f888cfc02803beefcd9",
+      "usage_characters": 25
+    },
+    "make_ten/fill_gap_01.ogg": {
+      "audio_length_ms": 3744,
+      "audio_size_bytes": 38752,
+      "generated_at": "2026-07-27T09:35:52.597650+00:00",
+      "id": "fill_gap_01",
+      "request_sha256": "402a23f1c9ac9e79c8acb28481523b08ebc604f604d1b52dd28751418dd77e82",
+      "trace_id": "06b659775e13451dbebdc8ff62fc5f3d",
+      "usage_characters": 30
+    },
+    "make_ten/fill_gap_02.ogg": {
+      "audio_length_ms": 3600,
+      "audio_size_bytes": 36305,
+      "generated_at": "2026-07-27T09:53:54.805373+00:00",
+      "id": "fill_gap_02",
+      "request_sha256": "3278d158a8c3988447fbe81efa6c3c802bdb4b97849ef1c854031a71153d7241",
+      "trace_id": "06b65db122b08b7ca86117f9cd3dff10",
+      "usage_characters": 30
+    },
+    "make_ten/fill_gap_03.ogg": {
+      "audio_length_ms": 3852,
+      "audio_size_bytes": 38488,
+      "generated_at": "2026-07-27T09:53:55.843941+00:00",
+      "id": "fill_gap_03",
+      "request_sha256": "e50564f926b70ec62e3624710d9d389c0ca38fc210ec19994d31349c7b6f10dc",
+      "trace_id": "06b65db256839016cb4b7bf49391a3cf",
+      "usage_characters": 30
+    },
+    "make_ten/fill_gap_04.ogg": {
+      "audio_length_ms": 3636,
+      "audio_size_bytes": 38334,
+      "generated_at": "2026-07-27T09:53:56.937815+00:00",
+      "id": "fill_gap_04",
+      "request_sha256": "3c700c642cc3288adb1ae5d3c53cb52fb2ed3974fcf58218e8dab1a9b7c73b14",
+      "trace_id": "06b65db464b9489cc45a29d08698357a",
+      "usage_characters": 30
+    },
+    "make_ten/made_ten.ogg": {
+      "audio_length_ms": 2196,
+      "audio_size_bytes": 25079,
+      "generated_at": "2026-07-27T09:35:54.196719+00:00",
+      "id": "made_ten",
+      "request_sha256": "644d6b86904d58df436c0a3492a5b63017aff22b0c6c0be2e36bc51e633d55e7",
+      "trace_id": "06b659794b6707271402efb74d09937c",
+      "usage_characters": 11
+    },
+    "make_ten/retry_answer.ogg": {
+      "audio_length_ms": 4644,
+      "audio_size_bytes": 48218,
+      "generated_at": "2026-07-27T09:53:58.449799+00:00",
+      "id": "retry_answer",
+      "request_sha256": "8f2a37ec44b44264feb7397d225299f443160fb9837ac369e79258298d0b3696",
+      "trace_id": "06b65db5bd4fdb25ad9787c691c65404",
+      "usage_characters": 28
+    },
+    "make_ten/retry_fill.ogg": {
+      "audio_length_ms": 3636,
+      "audio_size_bytes": 39859,
+      "generated_at": "2026-07-27T09:35:53.466492+00:00",
+      "id": "retry_fill",
+      "request_sha256": "6de9097f5abbc60dfdb7749cf16ffa903b1ded4f4c348ea73660db613c5c6763",
+      "trace_id": "06b65978a47d053aece927b4896c8cc5",
+      "usage_characters": 27
+    },
     "story/diandian_plan.ogg": {
       "audio_length_ms": 5076,
       "audio_size_bytes": 51874,

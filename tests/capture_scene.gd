@@ -19,6 +19,17 @@ func _ready() -> void:
 			main.call("_show_arithmetic", requested_view)
 			await get_tree().process_frame
 			await get_tree().process_frame
+		elif requested_view in ["make_ten_fill", "make_ten_answer"]:
+			main.call("_show_make_ten")
+			await get_tree().process_frame
+			await get_tree().process_frame
+			if requested_view == "make_ten_answer":
+				var game := main.get("_current_view") as Control
+				var question: Dictionary = game.call("_current_question")
+				for source_index in range(int(question.get("gap"))):
+					game.call("_on_supply_pressed", source_index)
+				game.call("_on_fill_confirmed")
+				await get_tree().process_frame
 		else:
 			var selected_count := clampi(int(requested_view), 0, 10)
 			var game := main.get_child(0)
@@ -39,4 +50,7 @@ func _ready() -> void:
 		get_tree().quit(1)
 		return
 	print("SCREENSHOT: %s (%dx%d)" % [output_path, image.get_width(), image.get_height()])
+	AudioManager.stop_voice()
+	main.free()
+	await get_tree().process_frame
 	get_tree().quit(0)

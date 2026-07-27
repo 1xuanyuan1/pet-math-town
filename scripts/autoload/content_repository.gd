@@ -2,6 +2,7 @@ extends Node
 
 const COUNT_FEEDING_PATH := "res://content/math/grade1_sem1/count_feeding.json"
 const CARROT_ARITHMETIC_PATH := "res://content/math/grade1_sem1/carrot_arithmetic.json"
+const MAKE_TEN_PATH := "res://content/math/grade1_sem1/make_ten.json"
 const PLAYER_PROFILE_PATH := "res://content/player_profile.json"
 const STORY_INTRO_PATH := "res://content/story/garden_intro.json"
 
@@ -35,6 +36,14 @@ func reload() -> void:
 	else:
 		for message in arithmetic_errors:
 			push_error(message)
+	var make_ten := load_json_file(MAKE_TEN_PATH)
+	var make_ten_errors := validate_make_ten(make_ten)
+	validation_errors.append_array(make_ten_errors)
+	if make_ten_errors.is_empty():
+		_configs[make_ten["id"]] = make_ten
+	else:
+		for message in make_ten_errors:
+			push_error(message)
 	var profile := load_json_file(PLAYER_PROFILE_PATH)
 	var profile_errors := validate_player_profile(profile)
 	validation_errors.append_array(profile_errors)
@@ -59,6 +68,10 @@ func get_game_config(game_id: String) -> Dictionary:
 
 func get_arithmetic_config() -> Dictionary:
 	return _configs.get("carrot_arithmetic", {}).duplicate(true)
+
+
+func get_make_ten_config() -> Dictionary:
+	return _configs.get("make_ten", {}).duplicate(true)
 
 
 func get_player_profile_config() -> Dictionary:
@@ -152,6 +165,62 @@ static func validate_carrot_arithmetic(config: Dictionary) -> PackedStringArray:
 		for key in ["addition_template", "subtraction_template", "retry", "complete"]:
 			if str(prompts_value.get(key, "")).strip_edges().is_empty():
 				errors.append("加减法提示语 %s 不能为空" % key)
+	return errors
+
+
+static func validate_make_ten(config: Dictionary) -> PackedStringArray:
+	var errors := PackedStringArray()
+	if int(config.get("schema_version", 0)) != 1:
+		errors.append("make_ten.schema_version 必须为 1")
+	if config.get("id", "") != "make_ten":
+		errors.append("make_ten.id 不正确")
+	var session_value: Variant = config.get("session")
+	if not session_value is Dictionary:
+		errors.append("make_ten.session 必须是对象")
+		return errors
+	var session: Dictionary = session_value
+	var round_count := int(session.get("round_count", 0))
+	if round_count <= 0:
+		errors.append("make_ten.session.round_count 必须大于 0")
+	if int(session.get("maximum_result", 0)) != 18:
+		errors.append("凑十法首版最大结果必须为 18")
+	var pool_value: Variant = session.get("question_pool")
+	if not pool_value is Array or pool_value.size() < round_count:
+		errors.append("make_ten.question_pool 不能少于每局题数")
+		return errors
+	var seen_pairs := {}
+	for index in range(pool_value.size()):
+		var question_value: Variant = pool_value[index]
+		if not question_value is Dictionary:
+			errors.append("凑十题 %d 必须是对象" % index)
+			continue
+		var question: Dictionary = MakeTenQuestionGenerator.build_question(
+			int(question_value.get("left", 0)),
+			int(question_value.get("right", 0))
+		)
+		if question.is_empty():
+			errors.append("凑十题 %d 必须能拆小数、补成十且结果位于 11–18" % index)
+			continue
+		var pair_key := "%d+%d" % [question.get("left"), question.get("right")]
+		if seen_pairs.has(pair_key):
+			errors.append("凑十题不能重复：%s" % pair_key)
+		seen_pairs[pair_key] = true
+	var prompts_value: Variant = config.get("prompts")
+	if not prompts_value is Dictionary:
+		errors.append("make_ten.prompts 必须是对象")
+	else:
+		for key in [
+			"question_template",
+			"fill_template",
+			"retry_fill",
+			"made_ten",
+			"count_outside",
+			"retry_answer",
+			"correct",
+			"complete"
+		]:
+			if str(prompts_value.get(key, "")).strip_edges().is_empty():
+				errors.append("凑十法提示语 %s 不能为空" % key)
 	return errors
 
 

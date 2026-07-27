@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "id": "make_ten",
+  "curriculum": {
+    "region": "上海",
+    "grade": 1,
+    "semester": 1,
+    "publisher": "上海教育出版社",
+    "unit": "20以内进位加法",
+    "strategy": "凑十法",
+    "alignment_status": "scope-pending-textbook-page-verification",
+    "verified_page_refs": []
+  },
+  "session": {
+    "round_count": 5,
+    "maximum_result": 18,
+    "question_pool": [
+      {"left": 9, "right": 2},
+      {"left": 9, "right": 3},
+      {"left": 9, "right": 4},
+      {"left": 9, "right": 5},
+      {"left": 9, "right": 6},
+      {"left": 9, "right": 7},
+      {"left": 9, "right": 8},
+      {"left": 9, "right": 9},
+      {"left": 8, "right": 3},
+      {"left": 8, "right": 4},
+      {"left": 8, "right": 5},
+      {"left": 8, "right": 6},
+      {"left": 8, "right": 7},
+      {"left": 8, "right": 8},
+      {"left": 7, "right": 4},
+      {"left": 7, "right": 5},
+      {"left": 7, "right": 6},
+      {"left": 7, "right": 7},
+      {"left": 6, "right": 5},
+      {"left": 6, "right": 6}
+    ]
+  },
+  "prompts": {
+    "question_template": "米米有%d个胡萝卜，点点又送来%d个。先拿几个把十格篮子补满？",
+    "fill_template": "先拿%d个胡萝卜，把十格篮子补满。",
+    "retry_fill": "看看十格篮子还空着几个格子。",
+    "made_ten": "正好补成十！",
+    "count_outside": "再看看外面还剩几个胡萝卜。",
+    "retry_answer": "十加上外面的胡萝卜，再数一数。",
+    "correct": "算出来啦！",
+    "complete": "你会用凑十法啦！"
+  }
+}

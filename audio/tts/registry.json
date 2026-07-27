@@ -116,5 +116,15 @@
   "arithmetic.correct_01": "res://audio/tts/generated/arithmetic/correct_01.ogg",
   "arithmetic.correct_02": "res://audio/tts/generated/arithmetic/correct_02.ogg",
   "arithmetic.correct_03": "res://audio/tts/generated/arithmetic/correct_03.ogg",
-  "arithmetic.complete": "res://audio/tts/generated/arithmetic/complete.ogg"
+  "arithmetic.complete": "res://audio/tts/generated/arithmetic/complete.ogg",
+  "make_ten.fill_gap_01": "res://audio/tts/generated/make_ten/fill_gap_01.ogg",
+  "make_ten.fill_gap_02": "res://audio/tts/generated/make_ten/fill_gap_02.ogg",
+  "make_ten.fill_gap_03": "res://audio/tts/generated/make_ten/fill_gap_03.ogg",
+  "make_ten.fill_gap_04": "res://audio/tts/generated/make_ten/fill_gap_04.ogg",
+  "make_ten.retry_fill": "res://audio/tts/generated/make_ten/retry_fill.ogg",
+  "make_ten.made_ten": "res://audio/tts/generated/make_ten/made_ten.ogg",
+  "make_ten.count_outside": "res://audio/tts/generated/make_ten/count_outside.ogg",
+  "make_ten.retry_answer": "res://audio/tts/generated/make_ten/retry_answer.ogg",
+  "make_ten.correct": "res://audio/tts/generated/make_ten/correct.ogg",
+  "make_ten.complete": "res://audio/tts/generated/make_ten/complete.ogg"
 }

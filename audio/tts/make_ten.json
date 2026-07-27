@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "defaults": {
+    "model": "speech-2.8-hd",
+    "profile": "narrator",
+    "language_boost": "Chinese"
+  },
+  "items": [
+    {"id": "fill_gap_01", "text": "先拿一个胡萝卜，把十格篮子补满。", "output": "make_ten/fill_gap_01.ogg"},
+    {"id": "retry_fill", "text": "看看十格篮子还空着几个格子。", "output": "make_ten/retry_fill.ogg", "profile": "mentor"},
+    {"id": "made_ten", "text": "正好补成十！", "output": "make_ten/made_ten.ogg", "profile": "reward"},
+    {"id": "fill_gap_02", "text": "先拿两个胡萝卜，把十格篮子补满。", "output": "make_ten/fill_gap_02.ogg"},
+    {"id": "fill_gap_03", "text": "先拿三个胡萝卜，把十格篮子补满。", "output": "make_ten/fill_gap_03.ogg"},
+    {"id": "fill_gap_04", "text": "先拿四个胡萝卜，把十格篮子补满。", "output": "make_ten/fill_gap_04.ogg"},
+    {"id": "count_outside", "text": "再看看外面还剩几个胡萝卜。", "output": "make_ten/count_outside.ogg"},
+    {"id": "retry_answer", "text": "十加上外面的胡萝卜，再数一数。", "output": "make_ten/retry_answer.ogg", "profile": "mentor"},
+    {"id": "correct", "text": "算出来啦！", "output": "make_ten/correct.ogg", "profile": "reward"},
+    {"id": "complete", "text": "你会用凑十法啦！", "output": "make_ten/complete.ogg", "profile": "reward"}
+  ]
+}

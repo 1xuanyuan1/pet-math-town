@@ -6,6 +6,7 @@ const COUNT_FEEDING_SCENE := preload("res://scenes/games/count_feeding/count_fee
 const CARROT_ARITHMETIC_SCENE := preload(
 	"res://scenes/games/carrot_arithmetic/carrot_arithmetic.tscn"
 )
+const MAKE_TEN_SCENE := preload("res://scenes/games/make_ten/make_ten.tscn")
 
 var _current_view: Control
 
@@ -33,7 +34,7 @@ func _show_town_hub() -> void:
 	hub.story_requested.connect(_show_story_intro)
 	hub.set_route_available("addition", true)
 	hub.set_route_available("subtraction", true)
-	hub.set_route_available("ten_frame", false)
+	hub.set_route_available("ten_frame", true)
 
 
 func _on_route_selected(route_id: String) -> void:
@@ -41,6 +42,8 @@ func _on_route_selected(route_id: String) -> void:
 		_show_count_feeding()
 	elif route_id == "addition" or route_id == "subtraction":
 		_show_arithmetic(route_id)
+	elif route_id == "ten_frame":
+		_show_make_ten()
 
 
 func _show_count_feeding() -> void:
@@ -57,6 +60,15 @@ func _show_arithmetic(selected_operation: String) -> void:
 	_clear_current_view()
 	var game := CARROT_ARITHMETIC_SCENE.instantiate()
 	game.operation = selected_operation
+	_current_view = game
+	add_child(game)
+	game.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	game.exit_requested.connect(_show_town_hub)
+
+
+func _show_make_ten() -> void:
+	_clear_current_view()
+	var game := MAKE_TEN_SCENE.instantiate()
 	_current_view = game
 	add_child(game)
 	game.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)

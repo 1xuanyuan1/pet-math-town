@@ -24,6 +24,9 @@ func _run() -> void:
 	await _test_game_round()
 	await _test_arithmetic_round("addition")
 	await _test_arithmetic_round("subtraction")
+	await _test_make_ten_round()
+	AudioManager.stop_voice()
+	await get_tree().process_frame
 	if _failures.is_empty():
 		print("TESTS PASSED: %d checks" % _checks)
 		get_tree().quit(0)
@@ -73,6 +76,23 @@ func _test_content() -> void:
 	var arithmetic_errors: PackedStringArray = repository_script.validate_carrot_arithmetic(arithmetic)
 	_check(arithmetic_errors.is_empty(), "加减法课程 JSON 应通过校验：%s" % ", ".join(arithmetic_errors))
 	_check(int(arithmetic.get("session", {}).get("maximum_result")) == 10, "首版加减法结果应限制在 10 以内")
+	var make_ten: Dictionary = repository_script.load_json_file(
+		"res://content/math/grade1_sem1/make_ten.json"
+	)
+	var make_ten_errors: PackedStringArray = repository_script.validate_make_ten(make_ten)
+	_check(make_ten_errors.is_empty(), "凑十法课程 JSON 应通过校验：%s" % ", ".join(make_ten_errors))
+	_check(make_ten.get("session", {}).get("question_pool", []).size() == 20, "凑十法应包含二十道受控题目")
+	_check(
+		str(make_ten.get("curriculum", {}).get("alignment_status"))
+		== "scope-pending-textbook-page-verification",
+		"凑十法在获得教材内页前必须保留待核验标记"
+	)
+	var invalid_make_ten := make_ten.duplicate(true)
+	invalid_make_ten["session"]["question_pool"][0] = {"left": 5, "right": 9}
+	_check(
+		not repository_script.validate_make_ten(invalid_make_ten).is_empty(),
+		"不能补成十的题目必须被拒绝"
+	)
 
 
 func _test_question_generator() -> void:
@@ -109,6 +129,29 @@ func _test_question_generator() -> void:
 			_check(choices.size() == 3, "%s 每题应有三个答案选项" % operation)
 			_check(answer in choices, "%s 答案选项必须包含正确答案" % operation)
 
+	var make_ten_config := ContentRepository.get_make_ten_config()
+	var make_ten_pool: Array = make_ten_config.get("session", {}).get("question_pool", [])
+	var make_ten_first := MakeTenQuestionGenerator.generate_sequence(make_ten_pool, 12, 2026)
+	var make_ten_second := MakeTenQuestionGenerator.generate_sequence(make_ten_pool, 12, 2026)
+	_check(make_ten_first == make_ten_second, "凑十法相同种子必须生成相同题目")
+	_check(make_ten_first.size() == 12, "凑十法应生成指定数量的题目")
+	for index in range(make_ten_first.size()):
+		var question: Dictionary = make_ten_first[index]
+		_check(int(question.get("left")) + int(question.get("gap")) == 10, "凑十题第一步必须补成十")
+		_check(
+			int(question.get("gap")) + int(question.get("remainder")) == int(question.get("right")),
+			"凑十题必须正确拆分较小加数"
+		)
+		_check(
+			10 + int(question.get("remainder")) == int(question.get("answer")),
+			"凑十题第二步必须用十加余数得到答案"
+		)
+		if index > 0:
+			_check(
+				int(make_ten_first[index - 1].get("answer")) != int(question.get("answer")),
+				"相邻凑十题不应连续得到相同答案"
+			)
+
 
 func _test_tts_manifests() -> void:
 	var manifest_file := FileAccess.open("res://audio/tts/manifest.json", FileAccess.READ)
@@ -133,9 +176,13 @@ func _test_tts_manifests() -> void:
 	var hub_manifest: Dictionary = JSON.parse_string(hub_manifest_file.get_as_text())
 	var hub_items: Array = hub_manifest.get("items", [])
 	_check(hub_items.size() == 1, "小镇选关应包含一条语音引导")
+	var make_ten_manifest_file := FileAccess.open("res://audio/tts/make_ten.json", FileAccess.READ)
+	var make_ten_manifest: Dictionary = JSON.parse_string(make_ten_manifest_file.get_as_text())
+	var make_ten_items: Array = make_ten_manifest.get("items", [])
+	_check(make_ten_items.size() == 10, "凑十法应复用四条补十指令和六条固定反馈")
 	_check(
 		registry.size()
-		== items.size() + common_items.size() + arithmetic_items.size() + story_items.size() + hub_items.size() + 2,
+		== items.size() + common_items.size() + arithmetic_items.size() + story_items.size() + hub_items.size() + make_ten_items.size() + 2,
 		"Godot 音频注册表应覆盖所有可复用片段、剧情与小主人名"
 	)
 	var seen_ids := {}
@@ -158,6 +205,12 @@ func _test_tts_manifests() -> void:
 		_check(registry.has("arithmetic.%s" % str(item.get("id"))), "注册表缺少加减法片段：%s" % item.get("id"))
 		for name in ["米米", "点点", "团团", "香香", "小宝贝"]:
 			_check(name not in spoken_text, "加减法固定对白不能录死名称：%s" % name)
+	for item_value in make_ten_items:
+		var item: Dictionary = item_value
+		var spoken_text := str(item.get("text"))
+		_check(registry.has("make_ten.%s" % str(item.get("id"))), "注册表缺少凑十法片段：%s" % item.get("id"))
+		for name in ["米米", "点点", "团团", "香香", "小宝贝"]:
+			_check(name not in spoken_text, "凑十法固定对白不能录死名称：%s" % name)
 
 	var samples_file := FileAccess.open("res://audio/tts/samples.json", FileAccess.READ)
 	var samples: Dictionary = JSON.parse_string(samples_file.get_as_text())
@@ -235,6 +288,7 @@ func _test_story_flow() -> void:
 	_check(not bool((route_buttons["count_feeding"] as Button).disabled), "数数配餐应可选")
 	_check(not bool((route_buttons["addition"] as Button).disabled), "合起来加法关应已解锁")
 	_check(not bool((route_buttons["subtraction"] as Button).disabled), "拿走了减法关应已解锁")
+	_check(not bool((route_buttons["ten_frame"] as Button).disabled), "凑十小桥应已解锁")
 	main.call("_show_count_feeding")
 	await get_tree().process_frame
 	var game_view := main.get("_current_view") as Control
@@ -299,6 +353,82 @@ func _test_game_round() -> void:
 
 	AudioManager.stop_voice()
 	await get_tree().create_timer(0.1).timeout
+	game.free()
+	await get_tree().process_frame
+	if FileAccess.file_exists(game_test_path):
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(game_test_path))
+	ProgressStore.storage_path = storage_path_backup
+	ProgressStore.data = progress_backup
+
+
+func _test_make_ten_round() -> void:
+	var progress_backup: Dictionary = ProgressStore.data.duplicate(true)
+	var storage_path_backup: String = ProgressStore.storage_path
+	var game_test_path := "user://make-ten-progress-test-%d.json" % Time.get_ticks_usec()
+	ProgressStore.data = ProgressStore.default_data()
+	ProgressStore.storage_path = game_test_path
+	var game_scene := load("res://scenes/games/make_ten/make_ten.tscn") as PackedScene
+	var game := game_scene.instantiate()
+	get_tree().root.add_child(game)
+	await get_tree().process_frame
+	await get_tree().process_frame
+
+	var questions: Array = game.get("_questions")
+	_check(questions.size() == 5, "凑十法一局应有五回合")
+	var first_question: Dictionary = questions[0]
+	var first_sequence: Array[String] = game.call("_fill_audio_sequence", first_question)
+	_check(first_sequence.size() == 5, "凑十题应复用角色、数量短句并追加一条补十指令")
+	_check(first_sequence[0] == "common.character_mimi_continuing", "凑十题中的米米必须独立播放")
+	_check(first_sequence[2] == "common.character_diandian_continuing", "凑十题中的点点必须独立播放")
+	_check(
+		first_sequence[4] == "make_ten.fill_gap_%02d" % int(first_question.get("gap")),
+		"补十指令只需按一到四个空格生成四条自然短句"
+	)
+	_check((game.get("_ten_grid") as GridContainer).get_child_count() == 10, "十格篮子必须始终显示十个格子")
+	game.call("_on_fill_confirmed")
+	_check(game.get("_stage") == "fill_ten", "未补满十格时不能进入答案步骤")
+	_check("空着几个格子" in (game.get("_feedback_label") as Label).text, "补十不足时应提示观察空格")
+
+	for expected_round in range(5):
+		var question: Dictionary = game.call("_current_question")
+		var gap := int(question.get("gap"))
+		for source_index in range(gap):
+			game.call("_on_supply_pressed", source_index)
+		_check(game.get("_moved_source_indices").size() == gap, "孩子应能拿出正好补十的胡萝卜")
+		var rendered_carrots := 0
+		for slot_value in (game.get("_ten_grid") as GridContainer).get_children():
+			var slot := slot_value as PanelContainer
+			if slot.get_child_count() > 0 and slot.get_child(0).get_child_count() > 0:
+				rendered_carrots += 1
+		_check(rendered_carrots == 10, "补满时十格篮子必须实际显示十根胡萝卜")
+		game.call("_on_fill_confirmed")
+		_check(game.get("_stage") == "answer", "补满十格后应进入十加余数步骤")
+		var answer_row := game.get("_answer_row") as HBoxContainer
+		_check(answer_row.get_child_count() == 3, "第二步应提供三个答案")
+		var first_answer_content := (answer_row.get_child(0) as Button).get_child(0) as VBoxContainer
+		_check(first_answer_content.get_child_count() == 1, "答案按钮只显示数字，不再重复显示圆点")
+		var answer := int(question.get("answer"))
+		var correct_button: Button
+		var wrong_button: Button
+		for candidate in answer_row.get_children():
+			if int((candidate as Button).get_meta("answer_value")) == answer:
+				correct_button = candidate as Button
+			else:
+				wrong_button = candidate as Button
+		if expected_round == 0:
+			game.call("_on_answer_pressed", int(wrong_button.get_meta("answer_value")), wrong_button)
+			_check(not bool(game.get("_round_locked")), "凑十法答错后不应锁定回合")
+			_check("再数一数" in (game.get("_feedback_label") as Label).text, "凑十法答错应给出温和提示")
+		_check(correct_button != null, "每道凑十题必须显示正确答案")
+		game.call("_on_answer_pressed", answer, correct_button)
+		await get_tree().create_timer(4.1).timeout
+
+	_check(int(ProgressStore.data.get("rounds_completed")) == 5, "凑十法完整一局应记录五个回合")
+	_check(int(ProgressStore.data.get("sessions_completed")) == 1, "凑十法完整一局应记录一次会话")
+	_check(ProgressStore.data.get("last_played_game") == "make_ten", "凑十法应记录为最近游戏")
+	_check(game.get("_session_overlay") != null, "凑十法完成后应显示庆祝界面")
+
+	AudioManager.stop_voice()
 	game.free()
 	await get_tree().process_frame
 	if FileAccess.file_exists(game_test_path):
