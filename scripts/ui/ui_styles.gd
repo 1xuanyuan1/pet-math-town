@@ -9,7 +9,6 @@ const ORANGE := Color("#F59A4A")
 const SOFT_ORANGE := Color("#FFE2B8")
 const BLUE := Color("#83C8E8")
 
-
 static func rounded_box(
 	color: Color,
 	radius: int = 24,
@@ -51,4 +50,8 @@ static func apply_button(
 	button.add_theme_color_override("font_pressed_color", Color.WHITE)
 	button.add_theme_color_override("font_focus_color", Color.WHITE)
 	button.add_theme_color_override("font_disabled_color", Color("#8A968C"))
+	OffsetTransformButtonMotion.attach(button)
 
+
+static func apply_card_motion(button: Button) -> void:
+	OffsetTransformButtonMotion.attach(button, OffsetTransformButtonMotion.MotionProfile.CARD)

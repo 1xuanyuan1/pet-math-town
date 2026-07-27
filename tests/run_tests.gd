@@ -20,6 +20,7 @@ func _run() -> void:
 	_test_question_generator()
 	_test_tts_manifests()
 	_test_progress_store()
+	await _test_offset_transform_motion()
 	await _test_story_flow()
 	await _test_game_round()
 	await _test_arithmetic_round("addition")
@@ -303,6 +304,69 @@ func _test_progress_store() -> void:
 	second_store.free()
 
 
+func _test_offset_transform_motion() -> void:
+	var root := Control.new()
+	get_tree().root.add_child(root)
+	var button := Button.new()
+	button.custom_minimum_size = Vector2(240, 100)
+	root.add_child(button)
+	UIStyles.apply_button(button, UIStyles.GREEN, Color("#6ED08C"), UIStyles.GREEN_DARK)
+	_check(button.offset_transform_enabled, "通用按钮必须启用 Godot 4.7 Offset Transform")
+	_check(button.offset_transform_visual_only, "按钮偏移变换应只影响视觉，保持原点击热区")
+	_check(
+		button.offset_transform_pivot_ratio == Vector2(0.5, 0.5),
+		"按钮偏移缩放必须围绕中心点"
+	)
+	var connection_count := button.get_signal_connection_list("mouse_entered").size()
+	var controller_count := _count_offset_motion_controllers(button)
+	UIStyles.apply_button(button, UIStyles.GREEN, Color("#6ED08C"), UIStyles.GREEN_DARK)
+	_check(
+		button.get_signal_connection_list("mouse_entered").size() == connection_count,
+		"重复换色不能重复连接 Offset Transform 动效"
+	)
+	_check(
+		_count_offset_motion_controllers(button) == controller_count and controller_count == 1,
+		"每个按钮只能挂载一个通用 Offset Transform 动效组件"
+	)
+	UIStyles.apply_card_motion(button)
+	_check(button.get_meta("ui_offset_motion_profile") == "card", "大卡片应使用更明显的悬浮偏移")
+	button.mouse_entered.emit()
+	await get_tree().create_timer(0.2).timeout
+	_check(button.offset_transform_position.y <= -6.5, "卡片悬浮时应向上偏移")
+	_check(button.offset_transform_scale.x > 1.02, "卡片悬浮时应轻微放大")
+	button.button_down.emit()
+	await get_tree().create_timer(0.1).timeout
+	_check(button.offset_transform_position.y >= 2.5, "卡片按下时应产生下沉反馈")
+	_check(button.offset_transform_scale.x < 1.0, "卡片按下时应轻微缩小")
+	button.button_up.emit()
+	button.mouse_exited.emit()
+	await get_tree().create_timer(0.2).timeout
+	_check(button.offset_transform_position.is_zero_approx(), "卡片松开后应回到原视觉位置")
+	_check(button.offset_transform_scale.is_equal_approx(Vector2.ONE), "卡片松开后应恢复原视觉比例")
+
+	var carrot := CarrotButton.new()
+	root.add_child(carrot)
+	await get_tree().process_frame
+	_check(carrot.offset_transform_enabled, "胡萝卜按钮必须启用 Offset Transform")
+	_check(carrot.offset_transform_visual_only, "胡萝卜按压不能移动点击热区")
+	carrot.button_down.emit()
+	await get_tree().create_timer(0.1).timeout
+	_check(carrot.offset_transform_scale.x < 1.0, "胡萝卜按下时应使用偏移缩放")
+	carrot.button_up.emit()
+	await get_tree().create_timer(0.22).timeout
+	_check(carrot.offset_transform_scale.is_equal_approx(Vector2.ONE), "胡萝卜松开后应回弹")
+	root.free()
+	await get_tree().process_frame
+
+
+func _count_offset_motion_controllers(button: Button) -> int:
+	var count := 0
+	for child in button.get_children(true):
+		if child is OffsetTransformButtonMotion:
+			count += 1
+	return count
+
+
 func _test_story_flow() -> void:
 	var main_scene := load("res://scenes/main/main.tscn") as PackedScene
 	var main := main_scene.instantiate()
@@ -457,7 +521,8 @@ func _test_make_ten_round() -> void:
 		_check(game.get("_stage") == "answer", "补满十格后应进入十加余数步骤")
 		var answer_row := game.get("_answer_row") as HBoxContainer
 		_check(answer_row.get_child_count() == 3, "第二步应提供三个答案")
-		var first_answer_content := (answer_row.get_child(0) as Button).get_child(0) as VBoxContainer
+		var first_answer_content := _find_button_content(answer_row.get_child(0) as Button)
+		_check(first_answer_content != null, "凑十答案按钮必须保留数字内容容器")
 		_check(first_answer_content.get_child_count() == 1, "答案按钮只显示数字，不再重复显示圆点")
 		var answer := int(question.get("answer"))
 		var correct_button: Button
@@ -544,7 +609,8 @@ func _test_break_ten_round() -> void:
 		)
 		var answer_row := game.get("_answer_row") as HBoxContainer
 		_check(answer_row.get_child_count() == 3, "破十法第二步应提供三个答案")
-		var first_answer_content := (answer_row.get_child(0) as Button).get_child(0) as VBoxContainer
+		var first_answer_content := _find_button_content(answer_row.get_child(0) as Button)
+		_check(first_answer_content != null, "破十答案按钮必须保留数字内容容器")
 		_check(first_answer_content.get_child_count() == 1, "破十答案按钮只显示大数字")
 		var answer := int(question.get("answer"))
 		var correct_button: Button
@@ -574,6 +640,13 @@ func _test_break_ten_round() -> void:
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(game_test_path))
 	ProgressStore.storage_path = storage_path_backup
 	ProgressStore.data = progress_backup
+
+
+func _find_button_content(button: Button) -> VBoxContainer:
+	for child in button.get_children(true):
+		if child is VBoxContainer:
+			return child as VBoxContainer
+	return null
 
 
 func _test_arithmetic_round(test_operation: String) -> void:

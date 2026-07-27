@@ -18,35 +18,14 @@ var compact := false:
 		custom_minimum_size = Vector2(54, 72) if value else Vector2(68, 92)
 		queue_redraw()
 
-
 func _ready() -> void:
 	text = ""
 	flat = true
 	focus_mode = Control.FOCUS_ALL
 	custom_minimum_size = Vector2(68, 92) if not compact else Vector2(54, 72)
 	mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-	resized.connect(_update_pivot)
-	button_down.connect(_press_in)
-	button_up.connect(_press_out)
-	mouse_exited.connect(_press_out)
+	OffsetTransformButtonMotion.attach(self, OffsetTransformButtonMotion.MotionProfile.COMPACT)
 	queue_redraw()
-
-
-func _update_pivot() -> void:
-	pivot_offset = size * 0.5
-	queue_redraw()
-
-
-func _press_in() -> void:
-	if not unavailable:
-		scale = Vector2(0.92, 0.92)
-
-
-func _press_out() -> void:
-	if scale != Vector2.ONE:
-		var tween := create_tween()
-		tween.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-		tween.tween_property(self, "scale", Vector2.ONE, 0.18)
 
 
 func _draw() -> void:

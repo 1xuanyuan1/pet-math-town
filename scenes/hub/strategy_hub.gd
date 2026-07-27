@@ -113,6 +113,7 @@ func _add_route_card(
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	button.text = ""
 	UIStyles.apply_button(button, color, color.lightened(0.08), color.darkened(0.13))
+	UIStyles.apply_card_motion(button)
 	button.pressed.connect(route_selected.emit.bind(route_id))
 	parent.add_child(button)
 
