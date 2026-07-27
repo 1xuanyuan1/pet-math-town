@@ -25,6 +25,7 @@ func _run() -> void:
 	await _test_arithmetic_round("addition")
 	await _test_arithmetic_round("subtraction")
 	await _test_make_ten_round()
+	await _test_break_ten_round()
 	AudioManager.stop_voice()
 	await get_tree().process_frame
 	if _failures.is_empty():
@@ -329,7 +330,16 @@ func _test_story_flow() -> void:
 	_check(not bool((route_buttons["count_feeding"] as Button).disabled), "数数配餐应可选")
 	_check(not bool((route_buttons["addition"] as Button).disabled), "合起来加法关应已解锁")
 	_check(not bool((route_buttons["subtraction"] as Button).disabled), "拿走了减法关应已解锁")
-	_check(not bool((route_buttons["ten_frame"] as Button).disabled), "凑十小桥应已解锁")
+	_check(not bool((route_buttons["ten_frame"] as Button).disabled), "十格策略营应已解锁")
+	main.call("_show_strategy_hub")
+	await get_tree().process_frame
+	var strategy_view := main.get("_current_view") as Control
+	_check(strategy_view != null and strategy_view.name == "StrategyHub", "十格路线应先进入策略选关页")
+	var strategy_buttons: Dictionary = strategy_view.get("_route_buttons")
+	_check(not bool((strategy_buttons["make_ten"] as Button).disabled), "凑十小桥应已解锁")
+	_check(not bool((strategy_buttons["break_ten"] as Button).disabled), "破十山洞应已解锁")
+	_check(bool((strategy_buttons["flat_ten"] as Button).disabled), "平十阶梯应保持建设中")
+	_check(bool((strategy_buttons["borrow_ten"] as Button).disabled), "借十挑战应保持建设中")
 	main.call("_show_count_feeding")
 	await get_tree().process_frame
 	var game_view := main.get("_current_view") as Control
@@ -413,6 +423,7 @@ func _test_make_ten_round() -> void:
 	get_tree().root.add_child(game)
 	await get_tree().process_frame
 	await get_tree().process_frame
+	game.set("_answer_feedback_seconds", 0.01)
 
 	var questions: Array = game.get("_questions")
 	_check(questions.size() == 5, "凑十法一局应有五回合")
@@ -462,12 +473,99 @@ func _test_make_ten_round() -> void:
 			_check("再数一数" in (game.get("_feedback_label") as Label).text, "凑十法答错应给出温和提示")
 		_check(correct_button != null, "每道凑十题必须显示正确答案")
 		game.call("_on_answer_pressed", answer, correct_button)
-		await get_tree().create_timer(4.1).timeout
+		await get_tree().create_timer(0.03).timeout
 
 	_check(int(ProgressStore.data.get("rounds_completed")) == 5, "凑十法完整一局应记录五个回合")
 	_check(int(ProgressStore.data.get("sessions_completed")) == 1, "凑十法完整一局应记录一次会话")
 	_check(ProgressStore.data.get("last_played_game") == "make_ten", "凑十法应记录为最近游戏")
 	_check(game.get("_session_overlay") != null, "凑十法完成后应显示庆祝界面")
+
+	AudioManager.stop_voice()
+	game.free()
+	await get_tree().process_frame
+	if FileAccess.file_exists(game_test_path):
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(game_test_path))
+	ProgressStore.storage_path = storage_path_backup
+	ProgressStore.data = progress_backup
+
+
+func _test_break_ten_round() -> void:
+	var progress_backup: Dictionary = ProgressStore.data.duplicate(true)
+	var storage_path_backup: String = ProgressStore.storage_path
+	var game_test_path := "user://break-ten-progress-test-%d.json" % Time.get_ticks_usec()
+	ProgressStore.data = ProgressStore.default_data()
+	ProgressStore.storage_path = game_test_path
+	var game_scene := load("res://scenes/games/break_ten/break_ten.tscn") as PackedScene
+	var game := game_scene.instantiate()
+	get_tree().root.add_child(game)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	game.set("_answer_feedback_seconds", 0.01)
+
+	var questions: Array = game.get("_questions")
+	_check(questions.size() == 5, "破十法一局应有五回合")
+	var first_question: Dictionary = questions[0]
+	var first_sequence: Array[String] = game.call("_take_audio_sequence", first_question)
+	_check(first_sequence.size() == 4, "破十题应复用角色、数量短句、拿走数量和固定指令")
+	_check(first_sequence[0] == "common.character_mimi_continuing", "破十题中的米米必须独立播放")
+	_check(
+		first_sequence[1] == "break_ten.has_%02d" % int(first_question.get("left")),
+		"被减数只需为 11–16 生成六条自然数量短句"
+	)
+	_check(
+		first_sequence[2] == "arithmetic.take_away_%02d" % int(first_question.get("right")),
+		"拿走数量应复用已有加减法语音"
+	)
+	_check(first_sequence[3] == "break_ten.take_from_ten", "破十题只需一条固定的从十里拿指令")
+	_check((game.get("_ten_grid") as GridContainer).get_child_count() == 10, "破十法必须始终显示十格篮子")
+	game.call("_on_take_confirmed")
+	_check(game.get("_stage") == "take_from_ten", "没有拿够时不能进入答案步骤")
+	_check("拿走几个" in (game.get("_feedback_label") as Label).text, "拿走不足时应提示观察目标数量")
+
+	for expected_round in range(5):
+		var question: Dictionary = game.call("_current_question")
+		var take_count := int(question.get("right"))
+		for slot_index in range(take_count):
+			game.call("_on_ten_carrot_pressed", slot_index)
+		_check(game.get("_removed_indices").size() == take_count, "孩子应能从十格篮子里拿走目标数量")
+		var rendered_removed := 0
+		for slot_value in (game.get("_ten_grid") as GridContainer).get_children():
+			var slot := slot_value as PanelContainer
+			var carrot := slot.get_child(0).get_child(0) as CarrotButton
+			if carrot.removed:
+				rendered_removed += 1
+		_check(rendered_removed == take_count, "拿走的胡萝卜必须显示淡色减号状态")
+		game.call("_on_take_confirmed")
+		_check(game.get("_stage") == "answer", "从十里拿完后应进入合并剩余步骤")
+		_check(
+			"10 − %d + %d" % [question.get("right"), question.get("ones")]
+			in (game.get("_equation_label") as Label).text,
+			"第二步必须显示从十里减再加个位"
+		)
+		var answer_row := game.get("_answer_row") as HBoxContainer
+		_check(answer_row.get_child_count() == 3, "破十法第二步应提供三个答案")
+		var first_answer_content := (answer_row.get_child(0) as Button).get_child(0) as VBoxContainer
+		_check(first_answer_content.get_child_count() == 1, "破十答案按钮只显示大数字")
+		var answer := int(question.get("answer"))
+		var correct_button: Button
+		var wrong_button: Button
+		for candidate in answer_row.get_children():
+			if int((candidate as Button).get_meta("answer_value")) == answer:
+				correct_button = candidate as Button
+			else:
+				wrong_button = candidate as Button
+		if expected_round == 0:
+			game.call("_on_answer_pressed", int(wrong_button.get_meta("answer_value")), wrong_button)
+			_check(not bool(game.get("_round_locked")), "破十法答错后不应锁定回合")
+			_check("合起来" in (game.get("_feedback_label") as Label).text, "破十法答错应给出温和步骤提示")
+		_check(correct_button != null, "每道破十题必须显示正确答案")
+		game.call("_on_answer_pressed", answer, correct_button)
+		await get_tree().create_timer(0.03).timeout
+
+	_check(int(ProgressStore.data.get("rounds_completed")) == 5, "破十法完整一局应记录五个回合")
+	_check(int(ProgressStore.data.get("sessions_completed")) == 1, "破十法完整一局应记录一次会话")
+	_check(ProgressStore.data.get("last_played_game") == "break_ten", "破十法应记录为最近游戏")
+	_check(game.get("_session_overlay") != null, "破十法完成后应显示庆祝界面")
 
 	AudioManager.stop_voice()
 	game.free()

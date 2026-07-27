@@ -15,6 +15,10 @@ func _ready() -> void:
 			main.call("_show_town_hub")
 			await get_tree().process_frame
 			await get_tree().process_frame
+		elif requested_view == "strategy_hub":
+			main.call("_show_strategy_hub")
+			await get_tree().process_frame
+			await get_tree().process_frame
 		elif requested_view in ["addition", "subtraction"]:
 			main.call("_show_arithmetic", requested_view)
 			await get_tree().process_frame
@@ -29,6 +33,17 @@ func _ready() -> void:
 				for source_index in range(int(question.get("gap"))):
 					game.call("_on_supply_pressed", source_index)
 				game.call("_on_fill_confirmed")
+				await get_tree().process_frame
+		elif requested_view in ["break_ten_take", "break_ten_answer"]:
+			main.call("_show_break_ten")
+			await get_tree().process_frame
+			await get_tree().process_frame
+			if requested_view == "break_ten_answer":
+				var game := main.get("_current_view") as Control
+				var question: Dictionary = game.call("_current_question")
+				for slot_index in range(int(question.get("right"))):
+					game.call("_on_ten_carrot_pressed", slot_index)
+				game.call("_on_take_confirmed")
 				await get_tree().process_frame
 		else:
 			var selected_count := clampi(int(requested_view), 0, 10)
