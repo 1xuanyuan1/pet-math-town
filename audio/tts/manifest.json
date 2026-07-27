@@ -3,8 +3,37 @@
   "defaults": {
     "model": "speech-2.8-hd",
     "profile": "narrator",
-    "language_boost": "Chinese"
+    "language_boost": "Chinese",
+    "pronunciation_dict": {
+      "tone": ["米米/(mi3)(mi3)"]
+    }
   },
-  "items": []
+  "items": [
+    {"id": "target_01", "text": "请给米米放进一根胡萝卜。数好以后，点绿色对勾。", "output": "count_feeding/target_01.ogg"},
+    {"id": "target_02", "text": "请给米米放进两根胡萝卜。数好以后，点绿色对勾。", "output": "count_feeding/target_02.ogg"},
+    {"id": "target_03", "text": "请给米米放进三根胡萝卜。数好以后，点绿色对勾。", "output": "count_feeding/target_03.ogg"},
+    {"id": "target_04", "text": "请给米米放进四根胡萝卜。数好以后，点绿色对勾。", "output": "count_feeding/target_04.ogg"},
+    {"id": "target_05", "text": "请给米米放进五根胡萝卜。数好以后，点绿色对勾。", "output": "count_feeding/target_05.ogg"},
+    {"id": "target_06", "text": "请给米米放进六根胡萝卜。数好以后，点绿色对勾。", "output": "count_feeding/target_06.ogg"},
+    {"id": "target_07", "text": "请给米米放进七根胡萝卜。数好以后，点绿色对勾。", "output": "count_feeding/target_07.ogg"},
+    {"id": "target_08", "text": "请给米米放进八根胡萝卜。数好以后，点绿色对勾。", "output": "count_feeding/target_08.ogg"},
+    {"id": "target_09", "text": "请给米米放进九根胡萝卜。数好以后，点绿色对勾。", "output": "count_feeding/target_09.ogg"},
+    {"id": "target_10", "text": "请给米米放进十根胡萝卜。数好以后，点绿色对勾。", "output": "count_feeding/target_10.ogg"},
+    {"id": "target_01_short", "text": "请放进一根胡萝卜。", "output": "count_feeding/target_01_short.ogg"},
+    {"id": "target_02_short", "text": "请放进两根胡萝卜。", "output": "count_feeding/target_02_short.ogg"},
+    {"id": "target_03_short", "text": "请放进三根胡萝卜。", "output": "count_feeding/target_03_short.ogg"},
+    {"id": "target_04_short", "text": "请放进四根胡萝卜。", "output": "count_feeding/target_04_short.ogg"},
+    {"id": "target_05_short", "text": "请放进五根胡萝卜。", "output": "count_feeding/target_05_short.ogg"},
+    {"id": "target_06_short", "text": "请放进六根胡萝卜。", "output": "count_feeding/target_06_short.ogg"},
+    {"id": "target_07_short", "text": "请放进七根胡萝卜。", "output": "count_feeding/target_07_short.ogg"},
+    {"id": "target_08_short", "text": "请放进八根胡萝卜。", "output": "count_feeding/target_08_short.ogg"},
+    {"id": "target_09_short", "text": "请放进九根胡萝卜。", "output": "count_feeding/target_09_short.ogg"},
+    {"id": "target_10_short", "text": "请放进十根胡萝卜。", "output": "count_feeding/target_10_short.ogg"},
+    {"id": "retry", "text": "再数一数，然后点绿色对勾。", "output": "count_feeding/retry.ogg", "profile": "mentor"},
+    {"id": "correct_01", "text": "正好！", "output": "count_feeding/correct_01.ogg", "profile": "reward"},
+    {"id": "correct_02", "text": "数对啦！", "output": "count_feeding/correct_02.ogg", "profile": "reward"},
+    {"id": "correct_03", "text": "米米吃得刚刚好！", "output": "count_feeding/correct_03.ogg", "profile": "reward"},
+    {"id": "complete", "text": "今天的配餐完成啦！", "output": "count_feeding/complete.ogg", "profile": "reward"}
+  ]
 }
 

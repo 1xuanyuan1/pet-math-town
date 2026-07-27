@@ -1,2 +1,28 @@
-{}
+{
+  "count_feeding.target_01": "res://audio/tts/generated/count_feeding/target_01.ogg",
+  "count_feeding.target_02": "res://audio/tts/generated/count_feeding/target_02.ogg",
+  "count_feeding.target_03": "res://audio/tts/generated/count_feeding/target_03.ogg",
+  "count_feeding.target_04": "res://audio/tts/generated/count_feeding/target_04.ogg",
+  "count_feeding.target_05": "res://audio/tts/generated/count_feeding/target_05.ogg",
+  "count_feeding.target_06": "res://audio/tts/generated/count_feeding/target_06.ogg",
+  "count_feeding.target_07": "res://audio/tts/generated/count_feeding/target_07.ogg",
+  "count_feeding.target_08": "res://audio/tts/generated/count_feeding/target_08.ogg",
+  "count_feeding.target_09": "res://audio/tts/generated/count_feeding/target_09.ogg",
+  "count_feeding.target_10": "res://audio/tts/generated/count_feeding/target_10.ogg",
+  "count_feeding.target_01_short": "res://audio/tts/generated/count_feeding/target_01_short.ogg",
+  "count_feeding.target_02_short": "res://audio/tts/generated/count_feeding/target_02_short.ogg",
+  "count_feeding.target_03_short": "res://audio/tts/generated/count_feeding/target_03_short.ogg",
+  "count_feeding.target_04_short": "res://audio/tts/generated/count_feeding/target_04_short.ogg",
+  "count_feeding.target_05_short": "res://audio/tts/generated/count_feeding/target_05_short.ogg",
+  "count_feeding.target_06_short": "res://audio/tts/generated/count_feeding/target_06_short.ogg",
+  "count_feeding.target_07_short": "res://audio/tts/generated/count_feeding/target_07_short.ogg",
+  "count_feeding.target_08_short": "res://audio/tts/generated/count_feeding/target_08_short.ogg",
+  "count_feeding.target_09_short": "res://audio/tts/generated/count_feeding/target_09_short.ogg",
+  "count_feeding.target_10_short": "res://audio/tts/generated/count_feeding/target_10_short.ogg",
+  "count_feeding.retry": "res://audio/tts/generated/count_feeding/retry.ogg",
+  "count_feeding.correct_01": "res://audio/tts/generated/count_feeding/correct_01.ogg",
+  "count_feeding.correct_02": "res://audio/tts/generated/count_feeding/correct_02.ogg",
+  "count_feeding.correct_03": "res://audio/tts/generated/count_feeding/correct_03.ogg",
+  "count_feeding.complete": "res://audio/tts/generated/count_feeding/complete.ogg"
+}
 

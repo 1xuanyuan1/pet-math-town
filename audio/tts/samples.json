@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "defaults": {
+    "model": "speech-2.8-hd",
+    "profile": "narrator",
+    "language_boost": "Chinese",
+    "pronunciation_dict": {
+      "tone": ["米米/(mi3)(mi3)"]
+    }
+  },
+  "items": [
+    {
+      "id": "warm_girl",
+      "text": "请给米米放进四根胡萝卜。数好以后，点绿色对勾。",
+      "output": "warm_girl.ogg",
+      "voice_setting": {"voice_id": "Chinese (Mandarin)_Warm_Girl", "speed": 0.9, "emotion": "calm"}
+    },
+    {
+      "id": "gentle_senior",
+      "text": "请给米米放进四根胡萝卜。数好以后，点绿色对勾。",
+      "output": "gentle_senior.ogg",
+      "voice_setting": {"voice_id": "Chinese (Mandarin)_Gentle_Senior", "speed": 0.9, "emotion": "calm"}
+    },
+    {
+      "id": "soft_girl",
+      "text": "请给米米放进四根胡萝卜。数好以后，点绿色对勾。",
+      "output": "soft_girl.ogg",
+      "voice_setting": {"voice_id": "Chinese (Mandarin)_Soft_Girl", "speed": 0.9, "emotion": "calm"}
+    }
+  ]
+}
+

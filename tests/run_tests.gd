@@ -18,6 +18,7 @@ func _check(condition: bool, message: String) -> void:
 func _run() -> void:
 	_test_content()
 	_test_question_generator()
+	_test_tts_manifests()
 	_test_progress_store()
 	await _test_game_round()
 	if _failures.is_empty():
@@ -62,6 +63,34 @@ func _test_question_generator() -> void:
 	_check(int(second_level.get("maximum")) == 10, "完成一局后应解锁到 10")
 
 
+func _test_tts_manifests() -> void:
+	var manifest_file := FileAccess.open("res://audio/tts/manifest.json", FileAccess.READ)
+	var manifest: Dictionary = JSON.parse_string(manifest_file.get_as_text())
+	var registry_file := FileAccess.open("res://audio/tts/registry.json", FileAccess.READ)
+	var registry: Dictionary = JSON.parse_string(registry_file.get_as_text())
+	var items: Array = manifest.get("items", [])
+	_check(items.size() == 25, "首版 TTS 清单应包含 25 条语音")
+	_check(registry.size() == items.size(), "Godot 音频注册表应覆盖全部正式语音")
+	var seen_ids := {}
+	for item_value in items:
+		var item: Dictionary = item_value
+		var item_id := str(item.get("id"))
+		_check(not seen_ids.has(item_id), "TTS id 不能重复：%s" % item_id)
+		seen_ids[item_id] = true
+		var registry_id := "count_feeding.%s" % item_id
+		_check(registry.has(registry_id), "注册表缺少：%s" % registry_id)
+		_check(str(item.get("text")).find("%d") == -1, "TTS 文本不能保留格式占位符")
+
+	var samples_file := FileAccess.open("res://audio/tts/samples.json", FileAccess.READ)
+	var samples: Dictionary = JSON.parse_string(samples_file.get_as_text())
+	var sample_items: Array = samples.get("items", [])
+	_check(sample_items.size() == 3, "旁白试听清单应包含三种音色")
+	var sample_text := str(sample_items[0].get("text"))
+	for sample_value in sample_items:
+		var sample: Dictionary = sample_value
+		_check(str(sample.get("text")) == sample_text, "三音色试听必须使用相同文案")
+
+
 func _test_progress_store() -> void:
 	var progress_script := load("res://scripts/autoload/progress_store.gd")
 	var test_path := "user://progress-test-%d.json" % Time.get_ticks_usec()
@@ -97,6 +126,8 @@ func _test_game_round() -> void:
 
 	var target := int(game.get("_target_count"))
 	_check(target >= 1 and target <= 5, "首回合目标应位于 1–5")
+	var idle_timer := game.get("_idle_timer") as Timer
+	_check(idle_timer != null and is_equal_approx(idle_timer.wait_time, 9.0), "无操作短提示应在九秒后触发")
 	var wrong_count := 2 if target == 1 else 1
 	for index in range(wrong_count):
 		game.call("_on_supply_pressed", index)

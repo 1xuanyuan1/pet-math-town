@@ -7,3 +7,4 @@ build/web/*
 !build/web/.gitkeep
 build/android/*
 !build/android/.gitkeep
+audio/tts/_samples/

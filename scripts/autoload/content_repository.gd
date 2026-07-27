@@ -76,8 +76,7 @@ static func validate_count_feeding(config: Dictionary) -> PackedStringArray:
 	if not prompts_value is Dictionary:
 		errors.append("count_feeding.prompts 必须是对象")
 	else:
-		for key in ["intro", "target_template", "retry", "complete"]:
+		for key in ["intro", "target_template", "short_target_template", "retry", "complete"]:
 			if str(prompts_value.get(key, "")).strip_edges().is_empty():
 				errors.append("提示语 %s 不能为空" % key)
 	return errors
-

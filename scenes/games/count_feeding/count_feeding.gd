@@ -19,6 +19,7 @@ var _target_number: Label
 var _confirm_button: Button
 var _replay_button: Button
 var _session_overlay: Control
+var _idle_timer: Timer
 
 
 func _ready() -> void:
@@ -197,6 +198,12 @@ func _build_ui() -> void:
 	_confirm_button.pressed.connect(_on_confirm_pressed)
 	action_row.add_child(_confirm_button)
 
+	_idle_timer = Timer.new()
+	_idle_timer.one_shot = true
+	_idle_timer.wait_time = 9.0
+	_idle_timer.timeout.connect(_on_idle_timeout)
+	add_child(_idle_timer)
+
 
 func _make_label(text_value: String, font_size: int, color: Color, centered: bool = true) -> Label:
 	var label := Label.new()
@@ -255,6 +262,7 @@ func _on_supply_pressed(source_index: int) -> void:
 	_selected_sources.append(source_index)
 	_supply_buttons[source_index].unavailable = true
 	_rebuild_basket()
+	_restart_idle_timer()
 
 
 func _on_basket_pressed(source_index: int) -> void:
@@ -263,6 +271,7 @@ func _on_basket_pressed(source_index: int) -> void:
 	_selected_sources.erase(source_index)
 	_supply_buttons[source_index].unavailable = false
 	_rebuild_basket()
+	_restart_idle_timer()
 
 
 func _rebuild_basket() -> void:
@@ -283,6 +292,7 @@ func _rebuild_basket() -> void:
 func _on_confirm_pressed() -> void:
 	if _round_locked or _selected_sources.is_empty():
 		return
+	_restart_idle_timer()
 	if _selected_sources.size() == _target_count:
 		_handle_correct()
 	else:
@@ -296,10 +306,12 @@ func _handle_retry() -> void:
 	AudioManager.play_prompt("count_feeding.retry", _feedback_label.text)
 	_shake_basket()
 	_pulse_control(_target_card)
+	_restart_idle_timer()
 
 
 func _handle_correct() -> void:
 	_round_locked = true
+	_idle_timer.stop()
 	_confirm_button.disabled = true
 	_progress_dots.completed = _round_index + 1
 	ProgressStore.complete_round()
@@ -327,6 +339,23 @@ func _play_current_prompt() -> void:
 	var prompt := template % _target_count
 	AudioManager.play_prompt("count_feeding.target_%02d" % _target_count, prompt)
 	_pulse_control(_target_card)
+	_restart_idle_timer()
+
+
+func _on_idle_timeout() -> void:
+	if _round_locked or _config.is_empty():
+		return
+	var template := str(
+		_config.get("prompts", {}).get("short_target_template", "请放进%d根胡萝卜。")
+	)
+	var prompt := template % _target_count
+	AudioManager.play_prompt("count_feeding.target_%02d_short" % _target_count, prompt)
+	_pulse_control(_target_card)
+
+
+func _restart_idle_timer() -> void:
+	if not _round_locked and _idle_timer != null:
+		_idle_timer.start()
 
 
 func _pulse_control(control: Control) -> void:
@@ -363,6 +392,7 @@ func _burst_stars() -> void:
 func _finish_session() -> void:
 	ProgressStore.complete_session("count_feeding")
 	_round_locked = true
+	_idle_timer.stop()
 	AudioManager.play_prompt(
 		"count_feeding.complete",
 		str(_config.get("prompts", {}).get("complete", "完成啦！"))
@@ -408,4 +438,3 @@ func _show_session_overlay() -> void:
 	replay.pressed.connect(_start_session)
 	box.add_child(replay)
 	_pulse_control(card)
-
