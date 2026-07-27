@@ -4,8 +4,9 @@ signal route_selected(route_id: String)
 signal back_requested
 
 const MAKE_TEN_ICON := preload("res://assets/art/hub/make_ten.png")
-const SUBTRACTION_ICON := preload("res://assets/art/hub/subtraction.png")
-const ADDITION_ICON := preload("res://assets/art/hub/addition.png")
+const BREAK_TEN_ICON := preload("res://assets/art/hub/break_ten.png")
+const FLAT_TEN_ICON := preload("res://assets/art/hub/flat_ten.png")
+const BORROW_TEN_ICON := preload("res://assets/art/hub/borrow_ten.png")
 
 var _route_buttons: Dictionary = {}
 
@@ -82,15 +83,15 @@ func _build_ui() -> void:
 		"先补成十，再加剩下的", Color("#8CBF92")
 	)
 	_add_route_card(
-		cards, "break_ten", SUBTRACTION_ICON, "10−", "破十山洞",
+		cards, "break_ten", BREAK_TEN_ICON, "10−", "破十山洞",
 		"先从十里减，再把剩下的合起来", Color("#75B9D8")
 	)
 	_add_route_card(
-		cards, "flat_ten", ADDITION_ICON, "→10", "平十阶梯",
+		cards, "flat_ten", FLAT_TEN_ICON, "→10", "平十阶梯",
 		"先减到十，再减剩下的", Color("#E0A66D")
 	)
 	_add_route_card(
-		cards, "borrow_ten", SUBTRACTION_ICON, "借10", "借十挑战",
+		cards, "borrow_ten", BORROW_TEN_ICON, "借10", "借十挑战",
 		"更难的减法挑战，稍后开放", Color("#B69AD2")
 	)
 

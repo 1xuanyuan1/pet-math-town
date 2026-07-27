@@ -404,6 +404,16 @@ func _test_story_flow() -> void:
 	_check(not bool((strategy_buttons["break_ten"] as Button).disabled), "破十山洞应已解锁")
 	_check(bool((strategy_buttons["flat_ten"] as Button).disabled), "平十阶梯应保持建设中")
 	_check(bool((strategy_buttons["borrow_ten"] as Button).disabled), "借十挑战应保持建设中")
+	var strategy_icon_paths: Dictionary = {}
+	for route_id in ["make_ten", "break_ten", "flat_ten", "borrow_ten"]:
+		var texture_views := (strategy_buttons[route_id] as Button).find_children(
+			"*", "TextureRect", true, false
+		)
+		_check(texture_views.size() == 1, "%s 策略卡片必须有一张概念图标" % route_id)
+		if not texture_views.is_empty():
+			var icon_texture := (texture_views[0] as TextureRect).texture
+			strategy_icon_paths[icon_texture.resource_path] = true
+	_check(strategy_icon_paths.size() == 4, "四种十格策略必须使用四张不同的概念图标")
 	main.call("_show_count_feeding")
 	await get_tree().process_frame
 	var game_view := main.get("_current_view") as Control
