@@ -274,24 +274,18 @@ func _question_audio_sequence() -> Array[String]:
 	var left := int(question.get("left", 0))
 	var right := int(question.get("right", 0))
 	var sequence: Array[String] = [
-		"common.character_mimi",
-		"arithmetic.has",
-		"common.quantity_%02d" % left,
-		"common.object_carrots"
+		"common.character_mimi_continuing",
+		"arithmetic.has_%02d" % left
 	]
 	if operation == "addition":
 		sequence.append_array([
-			"common.character_diandian",
-			"arithmetic.brings",
-			"common.quantity_%02d" % right,
-			"common.object_carrots",
+			"common.character_diandian_continuing",
+			"arithmetic.brings_%02d" % right,
 			"arithmetic.how_many_total"
 		])
 	else:
 		sequence.append_array([
-			"arithmetic.take_away",
-			"common.quantity_%02d" % right,
-			"common.object_carrots",
+			"arithmetic.take_away_%02d" % right,
 			"arithmetic.how_many_left"
 		])
 	return sequence

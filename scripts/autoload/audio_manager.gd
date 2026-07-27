@@ -4,7 +4,9 @@ signal prompt_requested(audio_id: String, fallback_text: String)
 signal missing_audio(audio_id: String)
 
 const REGISTRY_PATH := "res://audio/tts/registry.json"
-const SEQUENCE_EDGE_TRIM_SECONDS := 0.28
+const SEQUENCE_LEADING_TRIM_SECONDS := 0.30
+const SEQUENCE_TRAILING_TRIM_SECONDS := 0.33
+const MINIMUM_SEGMENT_PLAY_SECONDS := 0.10
 
 var _registry: Dictionary = {}
 var _voice_player: AudioStreamPlayer
@@ -88,9 +90,18 @@ func _play_next_queued_stream() -> void:
 		return
 	_voice_player.stream = _voice_queue.pop_front()
 	var stream_length := _voice_player.stream.get_length()
-	var edge_trim := minf(SEQUENCE_EDGE_TRIM_SECONDS, stream_length * 0.2)
-	_voice_player.play(edge_trim)
-	_sequence_timer.start(maxf(0.05, stream_length - edge_trim * 2.0))
+	var leading_trim := minf(
+		SEQUENCE_LEADING_TRIM_SECONDS,
+		maxf(0.0, stream_length - MINIMUM_SEGMENT_PLAY_SECONDS)
+	)
+	var trailing_trim := minf(
+		SEQUENCE_TRAILING_TRIM_SECONDS,
+		maxf(0.0, stream_length - leading_trim - MINIMUM_SEGMENT_PLAY_SECONDS)
+	)
+	_voice_player.play(leading_trim)
+	_sequence_timer.start(
+		maxf(MINIMUM_SEGMENT_PLAY_SECONDS, stream_length - leading_trim - trailing_trim)
+	)
 
 
 func stop_voice() -> void:

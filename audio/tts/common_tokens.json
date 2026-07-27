@@ -12,6 +12,8 @@
     {"id": "character_mimi", "text": "米米", "output": "tokens/character_mimi.ogg"},
     {"id": "character_diandian", "text": "点点", "output": "tokens/character_diandian.ogg"},
     {"id": "character_tuantuan", "text": "团团", "output": "tokens/character_tuantuan.ogg"},
+    {"id": "character_mimi_continuing", "text": "米米，", "output": "tokens/character_mimi_continuing.ogg"},
+    {"id": "character_diandian_continuing", "text": "点点，", "output": "tokens/character_diandian_continuing.ogg"},
     {"id": "quantity_01", "text": "一个", "output": "tokens/quantity_01.ogg"},
     {"id": "quantity_02", "text": "两个", "output": "tokens/quantity_02.ogg"},
     {"id": "quantity_03", "text": "三个", "output": "tokens/quantity_03.ogg"},

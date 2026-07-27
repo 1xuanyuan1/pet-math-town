@@ -116,15 +116,15 @@ func _test_tts_manifests() -> void:
 	var registry_file := FileAccess.open("res://audio/tts/registry.json", FileAccess.READ)
 	var registry: Dictionary = JSON.parse_string(registry_file.get_as_text())
 	var items: Array = manifest.get("items", [])
-	_check(items.size() == 8, "拼接后的数数关只应保留八个固定语音片段")
+	_check(items.size() == 16, "数数关应复用固定问句，不重复生成数字提醒")
 	var common_manifest_file := FileAccess.open("res://audio/tts/common_tokens.json", FileAccess.READ)
 	var common_manifest: Dictionary = JSON.parse_string(common_manifest_file.get_as_text())
 	var common_items: Array = common_manifest.get("items", [])
-	_check(common_items.size() == 58, "共享词库应包含角色名、数量词、0–40 和运算符")
+	_check(common_items.size() == 60, "共享词库应包含角色名及承接语气、数量词、0–40 和运算符")
 	var arithmetic_manifest_file := FileAccess.open("res://audio/tts/arithmetic.json", FileAccess.READ)
 	var arithmetic_manifest: Dictionary = JSON.parse_string(arithmetic_manifest_file.get_as_text())
 	var arithmetic_items: Array = arithmetic_manifest.get("items", [])
-	_check(arithmetic_items.size() == 10, "加减法应包含十个固定语音片段")
+	_check(arithmetic_items.size() == 35, "加减法应复用固定问题，并保留带数量的自然短句")
 	var story_manifest_file := FileAccess.open("res://audio/tts/story_intro.json", FileAccess.READ)
 	var story_manifest: Dictionary = JSON.parse_string(story_manifest_file.get_as_text())
 	var story_items: Array = story_manifest.get("items", [])
@@ -260,9 +260,14 @@ func _test_game_round() -> void:
 	var target := int(game.get("_target_count"))
 	_check(target >= 1 and target <= 5, "首回合目标应位于 1–5")
 	var target_sequence: Array[String] = game.call("_target_audio_sequence")
-	_check(target_sequence[0] == "common.character_mimi", "数数对白中的米米必须是独立名字片段")
-	_check(target_sequence[1] == "count_feeding.wants", "角色名后应播放不含名字的‘想要’片段")
-	_check(target_sequence[2] == "common.quantity_%02d" % target, "题目数量必须是独立数量词片段")
+	_check(target_sequence.size() == 3, "数数题目应由名称、数量短句和固定问句组成")
+	_check(target_sequence[0] == "common.character_mimi_continuing", "数数对白中的米米必须独立并使用承接语气")
+	_check(target_sequence[1] == "count_feeding.wants_%02d" % target, "数量应保留在自然短句中")
+	_check(target_sequence[2] == "count_feeding.help_put_in_basket", "固定问句只能保留一份语音")
+	var idle_sequence: Array[String] = game.call("_short_target_audio_sequence")
+	_check(idle_sequence == target_sequence.slice(0, 2), "无操作提醒应复用当前目标，不重复生成十条短语音")
+	_check(is_equal_approx(AudioManager.SEQUENCE_LEADING_TRIM_SECONDS, 0.30), "片段头部应裁掉三百毫秒空白")
+	_check(is_equal_approx(AudioManager.SEQUENCE_TRAILING_TRIM_SECONDS, 0.33), "片段尾部应裁掉三百三十毫秒空白")
 	var idle_timer := game.get("_idle_timer") as Timer
 	_check(idle_timer != null and is_equal_approx(idle_timer.wait_time, 9.0), "无操作短提示应在九秒后触发")
 	var wrong_count := 2 if target == 1 else 1
@@ -321,12 +326,21 @@ func _test_arithmetic_round(test_operation: String) -> void:
 	var questions: Array = game.get("_questions")
 	_check(questions.size() == 5, "%s 一局应有五回合" % test_operation)
 	var audio_sequence: Array[String] = game.call("_question_audio_sequence")
-	_check(audio_sequence[0] == "common.character_mimi", "%s 对白中的米米必须独立播放" % test_operation)
-	if test_operation == "addition":
-		_check("common.character_diandian" in audio_sequence, "加法对白中的点点必须独立播放")
-	_check(audio_sequence.count("common.object_carrots") == 2, "%s 两组数量都应带胡萝卜片段" % test_operation)
-
 	var first_question: Dictionary = questions[0]
+	var left := int(first_question.get("left"))
+	var right := int(first_question.get("right"))
+	_check(audio_sequence[0] == "common.character_mimi_continuing", "%s 对白中的米米必须独立并使用承接语气" % test_operation)
+	_check(audio_sequence[1] == "arithmetic.has_%02d" % left, "%s 的第一组数量应并入自然短句" % test_operation)
+	if test_operation == "addition":
+		_check(audio_sequence.size() == 5, "加法题目应复用独立的固定问句")
+		_check(audio_sequence[2] == "common.character_diandian_continuing", "加法对白中的点点必须独立并使用承接语气")
+		_check(audio_sequence[3] == "arithmetic.brings_%02d" % right, "加法第二组数量应保留在自然短句中")
+		_check(audio_sequence[4] == "arithmetic.how_many_total", "加法固定问题只能保留一份语音")
+	else:
+		_check(audio_sequence.size() == 4, "减法题目应复用独立的固定问句")
+		_check(audio_sequence[2] == "arithmetic.take_away_%02d" % right, "减法拿走数量应保留在自然短句中")
+		_check(audio_sequence[3] == "arithmetic.how_many_left", "减法固定问题只能保留一份语音")
+
 	var first_answer := int(first_question.get("answer"))
 	var wrong_button: Button
 	for candidate in game.get("_answer_row").get_children():

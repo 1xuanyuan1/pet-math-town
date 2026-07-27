@@ -345,7 +345,7 @@ func _handle_correct() -> void:
 	var feedback_index := (_round_index % 3) + 1
 	if feedback_index == 3:
 		AudioManager.play_sequence(
-			["common.character_mimi", "count_feeding.eats_just_right"],
+			["common.character_mimi_continuing", "count_feeding.eats_just_right"],
 			_feedback_label.text
 		)
 	else:
@@ -406,7 +406,10 @@ func _on_idle_timeout() -> void:
 	if _round_locked or _config.is_empty():
 		return
 	var template := str(
-		_config.get("prompts", {}).get("short_target_template", "请放进%d个胡萝卜。")
+		_config.get("prompts", {}).get(
+			"target_template",
+			"米米想要%d个胡萝卜。你可以帮我把胡萝卜放在篮子里吗？"
+		)
 	)
 	var prompt := template % _target_count
 	AudioManager.play_sequence(_short_target_audio_sequence(), prompt)
@@ -415,19 +418,16 @@ func _on_idle_timeout() -> void:
 
 func _target_audio_sequence() -> Array[String]:
 	return [
-		"common.character_mimi",
-		"count_feeding.wants",
-		"common.quantity_%02d" % _target_count,
-		"common.object_carrots",
+		"common.character_mimi_continuing",
+		"count_feeding.wants_%02d" % _target_count,
 		"count_feeding.help_put_in_basket"
 	]
 
 
 func _short_target_audio_sequence() -> Array[String]:
 	return [
-		"count_feeding.please_put_in",
-		"common.quantity_%02d" % _target_count,
-		"common.object_carrots"
+		"common.character_mimi_continuing",
+		"count_feeding.wants_%02d" % _target_count
 	]
 
 
