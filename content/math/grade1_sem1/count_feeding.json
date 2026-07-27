@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "id": "count_feeding",
+  "title": "数数配餐",
+  "curriculum": {
+    "region": "上海",
+    "grade": 1,
+    "semester": 1,
+    "publisher": "上海教育出版社",
+    "unit": "10以内的数",
+    "alignment_status": "public-outline-aligned",
+    "verified_page_refs": []
+  },
+  "session": {
+    "round_count": 5,
+    "difficulty_levels": [
+      {"id": 1, "min_sessions": 0, "minimum": 1, "maximum": 5},
+      {"id": 2, "min_sessions": 1, "minimum": 1, "maximum": 10}
+    ]
+  },
+  "prompts": {
+    "intro": "请点一点胡萝卜，放进篮子里。",
+    "target_template": "请给米米放进%d根胡萝卜。",
+    "retry": "再数一数，然后点绿色对勾。",
+    "correct": ["正好！", "数对啦！", "米米吃得刚刚好！"],
+    "complete": "今天的配餐完成啦！"
+  }
+}
+

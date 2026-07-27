@@ -1,0 +1,9 @@
+.godot/
+.env.local
+.DS_Store
+*.tmp
+*.log
+build/web/*
+!build/web/.gitkeep
+build/android/*
+!build/android/.gitkeep
