@@ -8,3 +8,4 @@ build/web/*
 build/android/*
 !build/android/.gitkeep
 audio/tts/_samples/
+output/
