@@ -1,0 +1,32 @@
+{
+  "items": {
+    "common/name_default.ogg": {
+      "audio_length_ms": 1440,
+      "audio_size_bytes": 16167,
+      "generated_at": "2026-07-27T07:39:47.118657+00:00",
+      "id": "name_default",
+      "request_sha256": "13d3281ecba460072fea9cc30b6b6160903fbc35c75b8898d36281a000a55bd7",
+      "trace_id": "06b63e42f31413fefb6e8660bbd45c4a",
+      "usage_characters": 7
+    },
+    "common/name_xiangxiang.ogg": {
+      "audio_length_ms": 1332,
+      "audio_size_bytes": 15692,
+      "generated_at": "2026-07-27T07:39:47.739459+00:00",
+      "id": "name_xiangxiang",
+      "request_sha256": "e441f3a44919814972585fd91789d7c65d468cdada8134c6d20deb5e99d2629d",
+      "trace_id": "06b63e43795d4ea2f4fa03bd36a003fa",
+      "usage_characters": 5
+    },
+    "count_feeding/intro.ogg": {
+      "audio_length_ms": 2484,
+      "audio_size_bytes": 23731,
+      "generated_at": "2026-07-27T07:39:48.506372+00:00",
+      "id": "count_feeding_intro",
+      "request_sha256": "4cdcaa5181d05cad016bb525aa642fbd48da4a00b1e5420a8ac6a36f63804cf8",
+      "trace_id": "06b63e44f16bf7dfd4102ff3ffafa2df",
+      "usage_characters": 21
+    }
+  },
+  "version": 1
+}
