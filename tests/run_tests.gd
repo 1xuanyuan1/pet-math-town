@@ -20,6 +20,7 @@ func _run() -> void:
 	_test_question_generator()
 	_test_tts_manifests()
 	_test_progress_store()
+	await _test_story_flow()
 	await _test_game_round()
 	if _failures.is_empty():
 		print("TESTS PASSED: %d checks" % _checks)
@@ -54,6 +55,12 @@ func _test_content() -> void:
 	_check(profile_errors.is_empty(), "玩家称呼配置应通过校验：%s" % ", ".join(profile_errors))
 	_check(ContentRepository.child_name_audio_id("香香") == "common.name_xiangxiang", "香香应命中内置名字音频")
 	_check(ContentRepository.child_name_audio_id("自定义名字") == "common.name_default", "未知名字应回退默认音频")
+	var story: Dictionary = repository_script.load_json_file(
+		"res://content/story/garden_intro.json"
+	)
+	var story_errors: PackedStringArray = repository_script.validate_story_intro(story)
+	_check(story_errors.is_empty(), "剧情序章应通过校验：%s" % ", ".join(story_errors))
+	_check(story.get("lines", []).size() == 4, "剧情序章应包含四句对话")
 
 
 func _test_question_generator() -> void:
@@ -80,7 +87,14 @@ func _test_tts_manifests() -> void:
 	var registry: Dictionary = JSON.parse_string(registry_file.get_as_text())
 	var items: Array = manifest.get("items", [])
 	_check(items.size() == 25, "首版 TTS 清单应包含 25 条语音")
-	_check(registry.size() == items.size() + 2, "Godot 音频注册表应覆盖正式语音与名字片段")
+	var story_manifest_file := FileAccess.open("res://audio/tts/story_intro.json", FileAccess.READ)
+	var story_manifest: Dictionary = JSON.parse_string(story_manifest_file.get_as_text())
+	var story_items: Array = story_manifest.get("items", [])
+	_check(story_items.size() == 4, "剧情序章 TTS 应包含四句对话")
+	_check(
+		registry.size() == items.size() + story_items.size() + 2,
+		"Godot 音频注册表应覆盖游戏、剧情与名字语音"
+	)
 	var seen_ids := {}
 	for item_value in items:
 		var item: Dictionary = item_value
@@ -110,6 +124,10 @@ func _test_tts_manifests() -> void:
 	_check(personalization_items.size() == 2, "个性化 TTS 应包含默认名字和香香")
 	_check(registry.has("common.name_default"), "注册表应包含默认名字")
 	_check(registry.has("common.name_xiangxiang"), "注册表应包含香香")
+	for story_item_value in story_items:
+		var story_item: Dictionary = story_item_value
+		var story_registry_id := "story.%s" % str(story_item.get("id"))
+		_check(registry.has(story_registry_id), "注册表缺少剧情语音：%s" % story_registry_id)
 
 
 func _test_progress_store() -> void:
@@ -135,6 +153,29 @@ func _test_progress_store() -> void:
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(test_path))
 	first_store.free()
 	second_store.free()
+
+
+func _test_story_flow() -> void:
+	var main_scene := load("res://scenes/main/main.tscn") as PackedScene
+	var main := main_scene.instantiate()
+	get_tree().root.add_child(main)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	var story_view := main.get("_current_view") as Control
+	_check(story_view != null and story_view.name == "GardenIntro", "启动后应先进入剧情序章")
+	var dialogue := story_view.get("_dialogue_label") as Label
+	_check(
+		dialogue != null and ProgressStore.get_child_name() in dialogue.text,
+		"剧情首句应包含小主人称呼"
+	)
+	main.call("_show_count_feeding")
+	await get_tree().process_frame
+	var game_view := main.get("_current_view") as Control
+	_check(game_view != null and game_view.name == "CountFeeding", "剧情结束后应进入数数配餐")
+	AudioManager.stop_voice()
+	await get_tree().create_timer(0.1).timeout
+	main.free()
+	await get_tree().process_frame
 
 
 func _test_game_round() -> void:

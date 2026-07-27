@@ -2,6 +2,7 @@ extends Node
 
 const COUNT_FEEDING_PATH := "res://content/math/grade1_sem1/count_feeding.json"
 const PLAYER_PROFILE_PATH := "res://content/player_profile.json"
+const STORY_INTRO_PATH := "res://content/story/garden_intro.json"
 
 var _configs: Dictionary = {}
 var validation_errors: PackedStringArray = []
@@ -33,6 +34,14 @@ func reload() -> void:
 	else:
 		for message in profile_errors:
 			push_error(message)
+	var story_intro := load_json_file(STORY_INTRO_PATH)
+	var story_errors := validate_story_intro(story_intro)
+	validation_errors.append_array(story_errors)
+	if story_errors.is_empty():
+		_configs[story_intro["id"]] = story_intro
+	else:
+		for message in story_errors:
+			push_error(message)
 
 
 func get_game_config(game_id: String) -> Dictionary:
@@ -41,6 +50,10 @@ func get_game_config(game_id: String) -> Dictionary:
 
 func get_player_profile_config() -> Dictionary:
 	return _configs.get("player_profile", {}).duplicate(true)
+
+
+func get_story_intro_config() -> Dictionary:
+	return _configs.get("garden_intro", {}).duplicate(true)
 
 
 func child_name_audio_id(display_name: String) -> String:
@@ -134,4 +147,37 @@ static func validate_player_profile(config: Dictionary) -> PackedStringArray:
 		names[display_name] = true
 	if not names.has(str(config.get("default_name"))):
 		errors.append("默认名字必须位于 bundled_names 中")
+	return errors
+
+
+static func validate_story_intro(config: Dictionary) -> PackedStringArray:
+	var errors := PackedStringArray()
+	if int(config.get("schema_version", 0)) != 1:
+		errors.append("garden_intro.schema_version 必须为 1")
+	if config.get("id", "") != "garden_intro":
+		errors.append("garden_intro.id 不正确")
+	var background := str(config.get("background", ""))
+	if background.is_empty() or not ResourceLoader.exists(background):
+		errors.append("故事背景不存在：%s" % background)
+	var lines_value: Variant = config.get("lines")
+	if not lines_value is Array or lines_value.size() < 3:
+		errors.append("故事对话至少需要三句")
+		return errors
+	var audio_ids := {}
+	for index in range(lines_value.size()):
+		var line_value: Variant = lines_value[index]
+		if not line_value is Dictionary:
+			errors.append("故事对话 %d 必须是对象" % index)
+			continue
+		var line: Dictionary = line_value
+		if str(line.get("speaker", "")).strip_edges().is_empty():
+			errors.append("故事对话 %d 缺少角色" % index)
+		if str(line.get("text", "")).strip_edges().is_empty():
+			errors.append("故事对话 %d 缺少文案" % index)
+		var audio_id := str(line.get("audio_id", "")).strip_edges()
+		if audio_id.is_empty():
+			errors.append("故事对话 %d 缺少语音 id" % index)
+		elif audio_ids.has(audio_id):
+			errors.append("故事语音 id 不能重复：%s" % audio_id)
+		audio_ids[audio_id] = true
 	return errors

@@ -1,6 +1,10 @@
 {
   "common.name_default": "res://audio/tts/generated/common/name_default.ogg",
   "common.name_xiangxiang": "res://audio/tts/generated/common/name_xiangxiang.ogg",
+  "story.garden_welcome": "res://audio/tts/generated/story/garden_welcome.ogg",
+  "story.mimi_problem": "res://audio/tts/generated/story/mimi_problem.ogg",
+  "story.diandian_plan": "res://audio/tts/generated/story/diandian_plan.ogg",
+  "story.mimi_invite": "res://audio/tts/generated/story/mimi_invite.ogg",
   "count_feeding.target_01": "res://audio/tts/generated/count_feeding/target_01.ogg",
   "count_feeding.target_02": "res://audio/tts/generated/count_feeding/target_02.ogg",
   "count_feeding.target_03": "res://audio/tts/generated/count_feeding/target_03.ogg",

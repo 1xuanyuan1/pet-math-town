@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "defaults": {
+    "model": "speech-2.8-hd",
+    "profile": "narrator",
+    "language_boost": "Chinese",
+    "pronunciation_dict": {
+      "tone": ["米米/(mi3)(mi3)", "香香/(xiang1)(xiang1)"]
+    }
+  },
+  "items": [
+    {
+      "id": "garden_welcome",
+      "text": "萌宠小镇今天要准备一场胡萝卜野餐！",
+      "output": "story/garden_welcome.ogg"
+    },
+    {
+      "id": "mimi_problem",
+      "text": "我想带一些胡萝卜，可是还不知道该放几个。",
+      "output": "story/mimi_problem.ogg"
+    },
+    {
+      "id": "diandian_plan",
+      "text": "我们一边数，一边把胡萝卜放进篮子，就不会弄错啦！",
+      "output": "story/diandian_plan.ogg"
+    },
+    {
+      "id": "mimi_invite",
+      "text": "你愿意来帮帮我吗？点绿色箭头，我们出发吧！",
+      "output": "story/mimi_invite.ogg"
+    }
+  ]
+}

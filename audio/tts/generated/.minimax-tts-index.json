@@ -242,6 +242,42 @@
       "request_sha256": "cb8012ff4256d917d835e14ae0553b4bac024a6c51b39c873578b1a0080276eb",
       "trace_id": "06b64052abb5d63bd9d2cb3d16421a46",
       "usage_characters": 17
+    },
+    "story/diandian_plan.ogg": {
+      "audio_length_ms": 5076,
+      "audio_size_bytes": 51874,
+      "generated_at": "2026-07-27T08:03:07.206867+00:00",
+      "id": "diandian_plan",
+      "request_sha256": "2d3c8f04fe299c3b676cf30a5e1c915cd237827238ac443ca8acc4333892e1cc",
+      "trace_id": "06b643ba30124abf2b39bfdde5abef0a",
+      "usage_characters": 45
+    },
+    "story/garden_welcome.ogg": {
+      "audio_length_ms": 3924,
+      "audio_size_bytes": 41045,
+      "generated_at": "2026-07-27T08:03:05.447680+00:00",
+      "id": "garden_welcome",
+      "request_sha256": "04da51dac24cb1b5307758d94f841e1300b1e28ba9da3ac60e55bbeda99608ca",
+      "trace_id": "06b643b8c60ef9afc101f059ad4055a2",
+      "usage_characters": 33
+    },
+    "story/mimi_invite.ogg": {
+      "audio_length_ms": 4536,
+      "audio_size_bytes": 45335,
+      "generated_at": "2026-07-27T08:03:08.129932+00:00",
+      "id": "mimi_invite",
+      "request_sha256": "2340229b51883eb71b56107c06061c80e9d5d39ff3b810f7e74cfe15a2112140",
+      "trace_id": "06b643bb2df0f1d201383f6d83520194",
+      "usage_characters": 39
+    },
+    "story/mimi_problem.ogg": {
+      "audio_length_ms": 4356,
+      "audio_size_bytes": 46412,
+      "generated_at": "2026-07-27T08:03:06.289304+00:00",
+      "id": "mimi_problem",
+      "request_sha256": "96eec8240f4287e0b046173a710fb43ab6d375ca00f01b9c7a46f2a5b33992b0",
+      "trace_id": "06b643b9f18b0b52711faf95556337b1",
+      "usage_characters": 38
     }
   },
   "version": 1
