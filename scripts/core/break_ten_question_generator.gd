@@ -1,4 +1,4 @@
-class_name MakeTenQuestionGenerator
+class_name BreakTenQuestionGenerator
 extends RefCounted
 
 
@@ -28,7 +28,7 @@ static func generate_sequence(
 			var previous: Dictionary = result[-1]
 			if int(previous.get("answer")) == int(question.get("answer")):
 				continue
-			if int(previous.get("gap")) == int(question.get("gap")):
+			if int(previous.get("ones")) == int(question.get("ones")):
 				continue
 		result.append(question)
 	while result.size() < count:
@@ -39,7 +39,7 @@ static func generate_sequence(
 			var previous: Dictionary = result[-1]
 			if int(previous.get("answer")) == int(question.get("answer")):
 				continue
-			if int(previous.get("gap")) == int(question.get("gap")):
+			if int(previous.get("ones")) == int(question.get("ones")):
 				continue
 			selected = question
 			break
@@ -57,22 +57,22 @@ static func generate_sequence(
 
 
 static func build_question(left: int, right: int) -> Dictionary:
-	var gap := 10 - left
-	var remainder := right - gap
-	var answer := left + right
-	if left < 6 or left > 9:
+	var ones := left - 10
+	var ten_left := 10 - right
+	var answer := left - right
+	if left < 11 or left > 18:
 		return {}
-	if right < 2 or right > left:
+	if right < 2 or right > 9:
 		return {}
-	if gap < 1 or remainder < 1:
+	if right <= ones:
 		return {}
-	if answer < 11 or answer > 18:
+	if ten_left < 1 or answer < 2 or answer > 9:
 		return {}
 	return {
 		"left": left,
 		"right": right,
-		"gap": gap,
-		"remainder": remainder,
+		"ones": ones,
+		"ten_left": ten_left,
 		"answer": answer
 	}
 

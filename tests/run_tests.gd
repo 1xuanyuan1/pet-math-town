@@ -93,6 +93,23 @@ func _test_content() -> void:
 		not repository_script.validate_make_ten(invalid_make_ten).is_empty(),
 		"不能补成十的题目必须被拒绝"
 	)
+	var break_ten: Dictionary = repository_script.load_json_file(
+		"res://content/math/grade1_sem1/break_ten.json"
+	)
+	var break_ten_errors: PackedStringArray = repository_script.validate_break_ten(break_ten)
+	_check(break_ten_errors.is_empty(), "破十法课程 JSON 应通过校验：%s" % ", ".join(break_ten_errors))
+	_check(break_ten.get("session", {}).get("question_pool", []).size() == 20, "破十法应包含二十道受控题目")
+	_check(
+		str(break_ten.get("curriculum", {}).get("alignment_status"))
+		== "scope-pending-textbook-page-verification",
+		"破十法在获得教材内页前必须保留待核验标记"
+	)
+	var invalid_break_ten := break_ten.duplicate(true)
+	invalid_break_ten["session"]["question_pool"][0] = {"left": 13, "right": 3}
+	_check(
+		not repository_script.validate_break_ten(invalid_break_ten).is_empty(),
+		"不需要从十里减的题目必须被拒绝"
+	)
 
 
 func _test_question_generator() -> void:
@@ -150,6 +167,30 @@ func _test_question_generator() -> void:
 			_check(
 				int(make_ten_first[index - 1].get("answer")) != int(question.get("answer")),
 				"相邻凑十题不应连续得到相同答案"
+			)
+
+	var break_ten_config := ContentRepository.get_break_ten_config()
+	var break_ten_pool: Array = break_ten_config.get("session", {}).get("question_pool", [])
+	var break_ten_first := BreakTenQuestionGenerator.generate_sequence(break_ten_pool, 12, 2026)
+	var break_ten_second := BreakTenQuestionGenerator.generate_sequence(break_ten_pool, 12, 2026)
+	_check(break_ten_first == break_ten_second, "破十法相同种子必须生成相同题目")
+	_check(break_ten_first.size() == 12, "破十法应生成指定数量的题目")
+	for index in range(break_ten_first.size()):
+		var question: Dictionary = break_ten_first[index]
+		_check(10 + int(question.get("ones")) == int(question.get("left")), "破十题必须先把被减数拆成十和个位")
+		_check(10 - int(question.get("right")) == int(question.get("ten_left")), "破十题必须先从十里减")
+		_check(
+			int(question.get("ten_left")) + int(question.get("ones")) == int(question.get("answer")),
+			"破十题必须把十里剩下的与个位合起来"
+		)
+		_check(
+			int(question.get("left")) - int(question.get("right")) == int(question.get("answer")),
+			"破十题最终答案必须等于原减法算式"
+		)
+		if index > 0:
+			_check(
+				int(break_ten_first[index - 1].get("answer")) != int(question.get("answer")),
+				"相邻破十题不应连续得到相同答案"
 			)
 
 

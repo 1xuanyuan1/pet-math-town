@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "id": "break_ten",
+  "curriculum": {
+    "region": "上海",
+    "grade": 1,
+    "semester": 1,
+    "publisher": "上海教育出版社",
+    "unit": "20以内退位减法",
+    "strategy": "破十法",
+    "alignment_status": "scope-pending-textbook-page-verification",
+    "verified_page_refs": []
+  },
+  "session": {
+    "round_count": 5,
+    "maximum_minuend": 16,
+    "question_pool": [
+      {"left": 11, "right": 2},
+      {"left": 11, "right": 5},
+      {"left": 11, "right": 7},
+      {"left": 11, "right": 9},
+      {"left": 12, "right": 3},
+      {"left": 12, "right": 5},
+      {"left": 12, "right": 7},
+      {"left": 12, "right": 9},
+      {"left": 13, "right": 4},
+      {"left": 13, "right": 6},
+      {"left": 13, "right": 8},
+      {"left": 13, "right": 9},
+      {"left": 14, "right": 5},
+      {"left": 14, "right": 7},
+      {"left": 14, "right": 9},
+      {"left": 15, "right": 6},
+      {"left": 15, "right": 8},
+      {"left": 15, "right": 9},
+      {"left": 16, "right": 7},
+      {"left": 16, "right": 9}
+    ]
+  },
+  "prompts": {
+    "question_template": "米米有%d个胡萝卜，要拿走%d个。先从十格篮子里拿走几个？",
+    "take_template": "先从十格篮子里拿走%d个胡萝卜。",
+    "retry_take": "再看看，一共要拿走几个胡萝卜。",
+    "broke_ten": "十格篮子里拿好啦！",
+    "combine_left": "把篮子里剩下的和外面的合起来。",
+    "retry_answer": "把两边剩下的胡萝卜合起来，再数一数。",
+    "correct": "破十法算出来啦！",
+    "complete": "你会用破十法啦！"
+  }
+}
