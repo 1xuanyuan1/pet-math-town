@@ -1,0 +1,9 @@
+Use case: stylized-concept
+Asset type: children’s math game route icon
+Input image: use the supplied carrot only as the watercolor and gouache style reference.
+Primary request: a friendly addition icon showing exactly two carrots in the upper-left group and exactly three carrots in the upper-right group moving together into one wicker basket that contains exactly five carrots, with two short curved green arrows converging toward the basket and one small golden sparkle.
+Style/medium: soft hand-painted gouache and watercolor, rounded child-friendly forms, polished storybook game UI icon.
+Composition/framing: centered inside a warm cream circular sticker medallion, strong simple silhouette, generous padding, readable at 140 pixels.
+Scene/backdrop: perfectly flat solid #ff00ff chroma-key background outside the cream medallion.
+Constraints: this is the educational equation 2 + 3 = 5; exactly two carrots upper left, exactly three carrots upper right, exactly five carrots in the basket; the converging motion must be immediately clear; background must be one uniform color with no shadow, gradient, texture, floor, reflection, or lighting variation; do not use #ff00ff in the icon.
+Avoid: text, numbers, letters, mathematical symbols, watermark, realistic photography, busy decoration, cast shadow, contact shadow.

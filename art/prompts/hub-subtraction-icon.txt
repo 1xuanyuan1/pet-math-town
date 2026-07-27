@@ -1,0 +1,9 @@
+Use case: stylized-concept
+Asset type: children’s math game route icon
+Input image: use the supplied carrot only as the watercolor and gouache style reference.
+Primary request: a friendly subtraction icon for 5 minus 2, showing exactly three carrots remaining in a wicker basket and exactly two carrots together moving out to the upper right, guided by one short coral curved arrow and a small coral minus badge.
+Style/medium: soft hand-painted gouache and watercolor, rounded child-friendly forms, polished storybook game UI icon.
+Composition/framing: centered inside a warm cream circular sticker medallion, strong simple silhouette, generous padding, readable at 140 pixels.
+Scene/backdrop: perfectly flat solid #ff00ff chroma-key background outside the cream medallion.
+Constraints: this is the educational equation 5 − 2 = 3; exactly three carrots remain in the basket and exactly two carrots move out; the taking-away motion must be immediately clear; background must be one uniform color with no shadow, gradient, texture, floor, reflection, or lighting variation; do not use #ff00ff in the icon.
+Avoid: text, numbers, letters, watermark, realistic photography, busy decoration, cast shadow, contact shadow.

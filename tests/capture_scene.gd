@@ -11,7 +11,11 @@ func _ready() -> void:
 	var arguments := OS.get_cmdline_user_args()
 	if arguments.size() > 1:
 		var requested_view := str(arguments[1])
-		if requested_view in ["addition", "subtraction"]:
+		if requested_view == "hub":
+			main.call("_show_town_hub")
+			await get_tree().process_frame
+			await get_tree().process_frame
+		elif requested_view in ["addition", "subtraction"]:
 			main.call("_show_arithmetic", requested_view)
 			await get_tree().process_frame
 			await get_tree().process_frame

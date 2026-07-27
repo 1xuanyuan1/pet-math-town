@@ -3,6 +3,11 @@ extends Control
 signal route_selected(route_id: String)
 signal story_requested
 
+const COUNTING_ICON := preload("res://assets/art/hub/counting.png")
+const ADDITION_ICON := preload("res://assets/art/hub/addition.png")
+const SUBTRACTION_ICON := preload("res://assets/art/hub/subtraction.png")
+const MAKE_TEN_ICON := preload("res://assets/art/hub/make_ten.png")
+
 var _route_buttons: Dictionary = {}
 
 
@@ -72,6 +77,7 @@ func _build_ui() -> void:
 	_add_route_card(
 		cards,
 		"count_feeding",
+		COUNTING_ICON,
 		"1  2  3",
 		"数数配餐",
 		"数一数，放进一样多的胡萝卜",
@@ -80,7 +86,8 @@ func _build_ui() -> void:
 	_add_route_card(
 		cards,
 		"addition",
-		"2 + 3",
+		ADDITION_ICON,
+		"＋",
 		"合起来",
 		"两篮胡萝卜合在一起",
 		Color("#74C79A")
@@ -88,7 +95,8 @@ func _build_ui() -> void:
 	_add_route_card(
 		cards,
 		"subtraction",
-		"5 − 2",
+		SUBTRACTION_ICON,
+		"−",
 		"拿走了",
 		"看看篮子里还剩几个",
 		Color("#77B9DA")
@@ -96,13 +104,14 @@ func _build_ui() -> void:
 	_add_route_card(
 		cards,
 		"ten_frame",
-		"10",
-		"十格魔法",
-		"凑十、破十、平十和借十",
+		MAKE_TEN_ICON,
+		"8 + 5",
+		"凑十小桥",
+		"先补满十格，再加剩下的",
 		Color("#B99AD8")
 	)
 
-	var hint := _make_label("浅色卡片正在建设中，很快就能去玩啦！", 18, Color("#6B806F"))
+	var hint := _make_label("点一张图画卡片就出发，右上角可以重播语音。", 18, Color("#6B806F"))
 	hint.custom_minimum_size = Vector2(0, 32)
 	page.add_child(hint)
 
@@ -110,6 +119,7 @@ func _build_ui() -> void:
 func _add_route_card(
 	parent: GridContainer,
 	route_id: String,
+	icon: Texture2D,
 	equation: String,
 	title: String,
 	description: String,
@@ -118,12 +128,42 @@ func _add_route_card(
 	var button := Button.new()
 	button.custom_minimum_size = Vector2(280, 505)
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	button.text = "%s\n\n%s\n\n%s" % [equation, title, description]
-	button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	button.add_theme_font_size_override("font_size", 25)
+	button.text = ""
 	UIStyles.apply_button(button, color, color.lightened(0.08), color.darkened(0.13))
 	button.pressed.connect(route_selected.emit.bind(route_id))
 	parent.add_child(button)
+
+	var margin := MarginContainer.new()
+	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	margin.add_theme_constant_override("margin_left", 18)
+	margin.add_theme_constant_override("margin_top", 18)
+	margin.add_theme_constant_override("margin_right", 18)
+	margin.add_theme_constant_override("margin_bottom", 18)
+	button.add_child(margin)
+	margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+
+	var content := VBoxContainer.new()
+	content.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	content.alignment = BoxContainer.ALIGNMENT_CENTER
+	content.add_theme_constant_override("separation", 4)
+	margin.add_child(content)
+
+	var icon_view := TextureRect.new()
+	icon_view.texture = icon
+	icon_view.custom_minimum_size = Vector2(0, 215)
+	icon_view.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon_view.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icon_view.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	content.add_child(icon_view)
+
+	var equation_label := _make_label(equation, 31, Color.WHITE)
+	content.add_child(equation_label)
+	var title_label := _make_label(title, 27, Color.WHITE)
+	content.add_child(title_label)
+	var description_label := _make_label(description, 20, Color(1, 1, 1, 0.94))
+	description_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	description_label.custom_minimum_size = Vector2(0, 68)
+	content.add_child(description_label)
 	_route_buttons[route_id] = button
 
 
@@ -134,6 +174,7 @@ func _make_label(text_value: String, font_size: int, color: Color, centered: boo
 	label.add_theme_color_override("font_color", color)
 	label.add_theme_color_override("font_outline_color", Color(1, 1, 1, 0.75))
 	label.add_theme_constant_override("outline_size", 2)
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if centered:
 		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	return label

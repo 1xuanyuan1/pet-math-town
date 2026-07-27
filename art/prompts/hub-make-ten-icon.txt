@@ -1,0 +1,9 @@
+Use case: scientific-educational
+Asset type: children’s math game route icon
+Input image: use the supplied carrot only as the watercolor and gouache style reference.
+Primary request: a friendly make-ten icon showing one precise ten-frame tray: exactly two horizontal rows and exactly five cells per row, with exactly eight cells holding one small orange carrot each and the final two cells clearly empty.
+Style/medium: soft hand-painted gouache and watercolor, rounded child-friendly forms, polished storybook game UI icon with clean educational structure.
+Composition/framing: centered inside a warm cream circular sticker medallion, strong simple silhouette, generous padding, readable at 140 pixels; view the ten-frame nearly straight-on.
+Scene/backdrop: perfectly flat solid #ff00ff chroma-key background outside the cream medallion.
+Constraints: exactly ten equal cells in a 2-by-5 grid; exactly eight carrots; exactly two empty cells; background must be one uniform color with no shadow, gradient, texture, floor, reflection, or lighting variation; do not use #ff00ff in the icon.
+Avoid: text, numbers, letters, watermark, realistic photography, extra cells, extra carrots, busy decoration, cast shadow, contact shadow.

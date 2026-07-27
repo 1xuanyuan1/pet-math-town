@@ -1,0 +1,9 @@
+Use case: stylized-concept
+Asset type: children’s math game route icon
+Input image: use the supplied carrot only as the watercolor and gouache style reference.
+Primary request: a friendly counting icon showing one small wicker basket with exactly three clearly separated orange carrots.
+Style/medium: soft hand-painted gouache and watercolor, rounded child-friendly forms, polished storybook game UI icon.
+Composition/framing: centered inside a warm cream circular sticker medallion, strong simple silhouette, generous padding, readable at 140 pixels.
+Scene/backdrop: perfectly flat solid #ff00ff chroma-key background outside the cream medallion.
+Constraints: exactly three carrots; no other vegetables; crisp separated shapes; background must be one uniform color with no shadow, gradient, texture, floor, reflection, or lighting variation; do not use #ff00ff in the icon.
+Avoid: text, numbers, letters, watermark, realistic photography, busy decoration, cast shadow, contact shadow.
