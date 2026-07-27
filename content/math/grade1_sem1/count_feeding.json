@@ -19,9 +19,9 @@
     ]
   },
   "prompts": {
-    "intro": "请点一点胡萝卜，放进篮子里。",
-    "target_template": "请给米米放进%d根胡萝卜。数好以后，点绿色对勾。",
-    "short_target_template": "请放进%d根胡萝卜。",
+    "intro": "点一下胡萝卜，就会放进篮子里。",
+    "target_template": "米米想要%d个胡萝卜。你可以帮我把胡萝卜放在篮子里吗？",
+    "short_target_template": "请放进%d个胡萝卜。",
     "retry": "再数一数，然后点绿色对勾。",
     "correct": ["正好！", "数对啦！", "米米吃得刚刚好！"],
     "complete": "今天的配餐完成啦！"

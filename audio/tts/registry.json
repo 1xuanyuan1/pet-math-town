@@ -1,7 +1,6 @@
 {
   "common.name_default": "res://audio/tts/generated/common/name_default.ogg",
   "common.name_xiangxiang": "res://audio/tts/generated/common/name_xiangxiang.ogg",
-  "count_feeding.intro": "res://audio/tts/generated/count_feeding/intro.ogg",
   "count_feeding.target_01": "res://audio/tts/generated/count_feeding/target_01.ogg",
   "count_feeding.target_02": "res://audio/tts/generated/count_feeding/target_02.ogg",
   "count_feeding.target_03": "res://audio/tts/generated/count_feeding/target_03.ogg",

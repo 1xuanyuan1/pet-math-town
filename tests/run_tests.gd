@@ -39,6 +39,11 @@ func _test_content() -> void:
 	_check(not config.is_empty(), "课程 JSON 应能加载")
 	var errors: PackedStringArray = repository_script.validate_count_feeding(config)
 	_check(errors.is_empty(), "课程 JSON 应通过校验：%s" % ", ".join(errors))
+	_check(
+		str(config.get("prompts", {}).get("target_template"))
+		== "米米想要%d个胡萝卜。你可以帮我把胡萝卜放在篮子里吗？",
+		"题目引导应先说明米米的需要，再发出友好请求"
+	)
 
 	var invalid := config.duplicate(true)
 	invalid["session"]["difficulty_levels"][0]["maximum"] = 11
@@ -75,7 +80,7 @@ func _test_tts_manifests() -> void:
 	var registry: Dictionary = JSON.parse_string(registry_file.get_as_text())
 	var items: Array = manifest.get("items", [])
 	_check(items.size() == 25, "首版 TTS 清单应包含 25 条语音")
-	_check(registry.size() == items.size() + 3, "Godot 音频注册表应覆盖正式语音与个性化片段")
+	_check(registry.size() == items.size() + 2, "Godot 音频注册表应覆盖正式语音与名字片段")
 	var seen_ids := {}
 	for item_value in items:
 		var item: Dictionary = item_value
@@ -85,6 +90,11 @@ func _test_tts_manifests() -> void:
 		var registry_id := "count_feeding.%s" % item_id
 		_check(registry.has(registry_id), "注册表缺少：%s" % registry_id)
 		_check(str(item.get("text")).find("%d") == -1, "TTS 文本不能保留格式占位符")
+	_check(
+		str(items[2].get("text"))
+		== "米米想要三个胡萝卜。你可以帮我把胡萝卜放在篮子里吗？",
+		"三个胡萝卜的 TTS 文案应与家长确认的引导一致"
+	)
 
 	var samples_file := FileAccess.open("res://audio/tts/samples.json", FileAccess.READ)
 	var samples: Dictionary = JSON.parse_string(samples_file.get_as_text())
@@ -97,10 +107,9 @@ func _test_tts_manifests() -> void:
 	var personalization_file := FileAccess.open("res://audio/tts/personalization.json", FileAccess.READ)
 	var personalization: Dictionary = JSON.parse_string(personalization_file.get_as_text())
 	var personalization_items: Array = personalization.get("items", [])
-	_check(personalization_items.size() == 3, "个性化 TTS 应包含默认名字、香香和欢迎后半句")
+	_check(personalization_items.size() == 2, "个性化 TTS 应包含默认名字和香香")
 	_check(registry.has("common.name_default"), "注册表应包含默认名字")
 	_check(registry.has("common.name_xiangxiang"), "注册表应包含香香")
-	_check(registry.has("count_feeding.intro"), "注册表应包含欢迎后半句")
 
 
 func _test_progress_store() -> void:
@@ -171,6 +180,8 @@ func _test_game_round() -> void:
 	_check(int(ProgressStore.data.get("rounds_completed")) == 5, "完整一局应记录五个回合")
 	_check(game.get("_session_overlay") != null, "完成五回合后应显示庆祝重玩界面")
 
+	AudioManager.stop_voice()
+	await get_tree().create_timer(0.1).timeout
 	game.free()
 	await get_tree().process_frame
 	if FileAccess.file_exists(game_test_path):

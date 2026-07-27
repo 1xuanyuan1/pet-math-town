@@ -156,7 +156,7 @@ func _build_ui() -> void:
 	target_carrot.focus_mode = Control.FOCUS_NONE
 	target_carrot.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	target_box.add_child(target_carrot)
-	var unit_label := _make_label("根胡萝卜", 25, UIStyles.INK)
+	var unit_label := _make_label("个胡萝卜", 25, UIStyles.INK)
 	target_box.add_child(unit_label)
 
 	var action_row := HBoxContainer.new()
@@ -337,7 +337,12 @@ func _handle_correct() -> void:
 func _play_current_prompt() -> void:
 	if _config.is_empty() or _sequence.is_empty():
 		return
-	var template := str(_config.get("prompts", {}).get("target_template", "请放进%d根胡萝卜。"))
+	var template := str(
+		_config.get("prompts", {}).get(
+			"target_template",
+			"米米想要%d个胡萝卜。你可以帮我把胡萝卜放在篮子里吗？"
+		)
+	)
 	var prompt := template % _target_count
 	AudioManager.play_prompt("count_feeding.target_%02d" % _target_count, prompt)
 	_pulse_control(_target_card)
@@ -351,11 +356,16 @@ func _play_round_prompt() -> void:
 	_play_greeting_on_next_round = false
 	var child_name := ProgressStore.get_child_name()
 	var name_audio_id := ContentRepository.child_name_audio_id(child_name)
-	var template := str(_config.get("prompts", {}).get("target_template", "请放进%d根胡萝卜。"))
+	var template := str(
+		_config.get("prompts", {}).get(
+			"target_template",
+			"米米想要%d个胡萝卜。你可以帮我把胡萝卜放在篮子里吗？"
+		)
+	)
 	var target_prompt := template % _target_count
 	AudioManager.play_sequence(
-		[name_audio_id, "count_feeding.intro", "count_feeding.target_%02d" % _target_count],
-		"%s，来帮米米准备胡萝卜吧！%s" % [child_name, target_prompt]
+		[name_audio_id, "count_feeding.target_%02d" % _target_count],
+		"%s，%s" % [child_name, target_prompt]
 	)
 	_pulse_control(_target_card)
 	_restart_idle_timer()
@@ -365,7 +375,7 @@ func _on_idle_timeout() -> void:
 	if _round_locked or _config.is_empty():
 		return
 	var template := str(
-		_config.get("prompts", {}).get("short_target_template", "请放进%d根胡萝卜。")
+		_config.get("prompts", {}).get("short_target_template", "请放进%d个胡萝卜。")
 	)
 	var prompt := template % _target_count
 	AudioManager.play_prompt("count_feeding.target_%02d_short" % _target_count, prompt)

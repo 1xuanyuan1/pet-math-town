@@ -79,3 +79,4 @@ func stop_voice() -> void:
 	_voice_queue.clear()
 	if _voice_player != null:
 		_voice_player.stop()
+		_voice_player.stream = null

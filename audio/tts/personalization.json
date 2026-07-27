@@ -10,8 +10,6 @@
   },
   "items": [
     {"id": "name_default", "text": "小宝贝，", "output": "common/name_default.ogg"},
-    {"id": "name_xiangxiang", "text": "香香，", "output": "common/name_xiangxiang.ogg"},
-    {"id": "count_feeding_intro", "text": "来帮米米准备胡萝卜吧！", "output": "count_feeding/intro.ogg"}
+    {"id": "name_xiangxiang", "text": "香香，", "output": "common/name_xiangxiang.ogg"}
   ]
 }
-
