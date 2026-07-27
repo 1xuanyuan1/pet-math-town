@@ -112,6 +112,23 @@ func _test_content() -> void:
 		not repository_script.validate_break_ten(invalid_break_ten).is_empty(),
 		"不需要从十里减的题目必须被拒绝"
 	)
+	var flat_ten: Dictionary = repository_script.load_json_file(
+		"res://content/math/grade1_sem1/flat_ten.json"
+	)
+	var flat_ten_errors: PackedStringArray = repository_script.validate_flat_ten(flat_ten)
+	_check(flat_ten_errors.is_empty(), "平十法课程 JSON 应通过校验：%s" % ", ".join(flat_ten_errors))
+	_check(flat_ten.get("session", {}).get("question_pool", []).size() == 20, "平十法应包含二十道受控题目")
+	_check(
+		str(flat_ten.get("curriculum", {}).get("alignment_status"))
+		== "scope-pending-textbook-page-verification",
+		"平十法在获得教材内页前必须保留待核验标记"
+	)
+	var invalid_flat_ten := flat_ten.duplicate(true)
+	invalid_flat_ten["session"]["question_pool"][0] = {"left": 13, "right": 3}
+	_check(
+		not repository_script.validate_flat_ten(invalid_flat_ten).is_empty(),
+		"不能先减到十再减余数的平十题必须被拒绝"
+	)
 
 
 func _test_question_generator() -> void:
@@ -193,6 +210,38 @@ func _test_question_generator() -> void:
 			_check(
 				int(break_ten_first[index - 1].get("answer")) != int(question.get("answer")),
 				"相邻破十题不应连续得到相同答案"
+			)
+
+	var flat_ten_config := ContentRepository.get_flat_ten_config()
+	var flat_ten_pool: Array = flat_ten_config.get("session", {}).get("question_pool", [])
+	var flat_ten_first := FlatTenQuestionGenerator.generate_sequence(flat_ten_pool, 12, 2026)
+	var flat_ten_second := FlatTenQuestionGenerator.generate_sequence(flat_ten_pool, 12, 2026)
+	_check(flat_ten_first == flat_ten_second, "平十法相同种子必须生成相同题目")
+	_check(flat_ten_first.size() == 12, "平十法应生成指定数量的题目")
+	for index in range(flat_ten_first.size()):
+		var question: Dictionary = flat_ten_first[index]
+		_check(
+			int(question.get("left")) - int(question.get("to_ten")) == 10,
+			"平十题第一步必须先减到十"
+		)
+		_check(
+			int(question.get("to_ten")) + int(question.get("remainder"))
+			== int(question.get("right")),
+			"平十题必须正确拆分减数"
+		)
+		_check(
+			10 - int(question.get("remainder")) == int(question.get("answer")),
+			"平十题第二步必须从十里减去余数"
+		)
+		_check(
+			int(question.get("left")) - int(question.get("right"))
+			== int(question.get("answer")),
+			"平十题最终答案必须等于原减法算式"
+		)
+		if index > 0:
+			_check(
+				int(flat_ten_first[index - 1].get("answer")) != int(question.get("answer")),
+				"相邻平十题不应连续得到相同答案"
 			)
 
 

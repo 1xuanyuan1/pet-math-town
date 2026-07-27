@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "id": "flat_ten",
+  "curriculum": {
+    "region": "上海",
+    "grade": 1,
+    "semester": 1,
+    "publisher": "上海教育出版社",
+    "unit": "20以内退位减法",
+    "strategy": "平十法",
+    "alignment_status": "scope-pending-textbook-page-verification",
+    "verified_page_refs": []
+  },
+  "session": {
+    "round_count": 5,
+    "maximum_minuend": 16,
+    "question_pool": [
+      {"left": 11, "right": 2},
+      {"left": 11, "right": 5},
+      {"left": 11, "right": 7},
+      {"left": 11, "right": 9},
+      {"left": 12, "right": 3},
+      {"left": 12, "right": 5},
+      {"left": 12, "right": 7},
+      {"left": 12, "right": 9},
+      {"left": 13, "right": 4},
+      {"left": 13, "right": 6},
+      {"left": 13, "right": 8},
+      {"left": 13, "right": 9},
+      {"left": 14, "right": 5},
+      {"left": 14, "right": 7},
+      {"left": 14, "right": 9},
+      {"left": 15, "right": 6},
+      {"left": 15, "right": 8},
+      {"left": 15, "right": 9},
+      {"left": 16, "right": 7},
+      {"left": 16, "right": 9}
+    ]
+  },
+  "prompts": {
+    "question_template": "米米有%d个胡萝卜，要拿走%d个。先拿走几个，就到十了？",
+    "first_take_template": "先拿走%d个，正好剩十个。",
+    "retry_first_take": "看看十外面有几个胡萝卜，先把它们拿走。",
+    "reached_ten": "正好剩十个！",
+    "second_take_template": "还要再拿走%d个。",
+    "retry_second_take": "还要再拿走几个？",
+    "choose_answer": "看看十格里还剩几个胡萝卜。",
+    "retry_answer": "数一数十格里剩下的胡萝卜。",
+    "correct": "平十法算出来啦！",
+    "complete": "你会用平十法啦！"
+  }
+}

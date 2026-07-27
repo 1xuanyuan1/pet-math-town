@@ -4,6 +4,7 @@ const COUNT_FEEDING_PATH := "res://content/math/grade1_sem1/count_feeding.json"
 const CARROT_ARITHMETIC_PATH := "res://content/math/grade1_sem1/carrot_arithmetic.json"
 const MAKE_TEN_PATH := "res://content/math/grade1_sem1/make_ten.json"
 const BREAK_TEN_PATH := "res://content/math/grade1_sem1/break_ten.json"
+const FLAT_TEN_PATH := "res://content/math/grade1_sem1/flat_ten.json"
 const PLAYER_PROFILE_PATH := "res://content/player_profile.json"
 const STORY_INTRO_PATH := "res://content/story/garden_intro.json"
 
@@ -53,6 +54,14 @@ func reload() -> void:
 	else:
 		for message in break_ten_errors:
 			push_error(message)
+	var flat_ten := load_json_file(FLAT_TEN_PATH)
+	var flat_ten_errors := validate_flat_ten(flat_ten)
+	validation_errors.append_array(flat_ten_errors)
+	if flat_ten_errors.is_empty():
+		_configs[flat_ten["id"]] = flat_ten
+	else:
+		for message in flat_ten_errors:
+			push_error(message)
 	var profile := load_json_file(PLAYER_PROFILE_PATH)
 	var profile_errors := validate_player_profile(profile)
 	validation_errors.append_array(profile_errors)
@@ -85,6 +94,10 @@ func get_make_ten_config() -> Dictionary:
 
 func get_break_ten_config() -> Dictionary:
 	return _configs.get("break_ten", {}).duplicate(true)
+
+
+func get_flat_ten_config() -> Dictionary:
+	return _configs.get("flat_ten", {}).duplicate(true)
 
 
 func get_player_profile_config() -> Dictionary:
@@ -292,6 +305,66 @@ static func validate_break_ten(config: Dictionary) -> PackedStringArray:
 		]:
 			if str(prompts_value.get(key, "")).strip_edges().is_empty():
 				errors.append("破十法提示语 %s 不能为空" % key)
+	return errors
+
+
+static func validate_flat_ten(config: Dictionary) -> PackedStringArray:
+	var errors := PackedStringArray()
+	if int(config.get("schema_version", 0)) != 1:
+		errors.append("flat_ten.schema_version 必须为 1")
+	if config.get("id", "") != "flat_ten":
+		errors.append("flat_ten.id 不正确")
+	var session_value: Variant = config.get("session")
+	if not session_value is Dictionary:
+		errors.append("flat_ten.session 必须是对象")
+		return errors
+	var session: Dictionary = session_value
+	var round_count := int(session.get("round_count", 0))
+	if round_count <= 0:
+		errors.append("flat_ten.session.round_count 必须大于 0")
+	if int(session.get("maximum_minuend", 0)) != 16:
+		errors.append("平十法首版最大被减数必须为 16")
+	var pool_value: Variant = session.get("question_pool")
+	if not pool_value is Array or pool_value.size() < round_count:
+		errors.append("flat_ten.question_pool 不能少于每局题数")
+		return errors
+	var seen_pairs := {}
+	for index in range(pool_value.size()):
+		var question_value: Variant = pool_value[index]
+		if not question_value is Dictionary:
+			errors.append("平十题 %d 必须是对象" % index)
+			continue
+		var question: Dictionary = FlatTenQuestionGenerator.build_question(
+			int(question_value.get("left", 0)),
+			int(question_value.get("right", 0))
+		)
+		if question.is_empty():
+			errors.append("平十题 %d 必须先减到十、再减余数且结果位于 2–9" % index)
+			continue
+		if int(question.get("left")) > int(session.get("maximum_minuend", 0)):
+			errors.append("平十题 %d 超出首版最大被减数" % index)
+		var pair_key := "%d-%d" % [question.get("left"), question.get("right")]
+		if seen_pairs.has(pair_key):
+			errors.append("平十题不能重复：%s" % pair_key)
+		seen_pairs[pair_key] = true
+	var prompts_value: Variant = config.get("prompts")
+	if not prompts_value is Dictionary:
+		errors.append("flat_ten.prompts 必须是对象")
+	else:
+		for key in [
+			"question_template",
+			"first_take_template",
+			"retry_first_take",
+			"reached_ten",
+			"second_take_template",
+			"retry_second_take",
+			"choose_answer",
+			"retry_answer",
+			"correct",
+			"complete"
+		]:
+			if str(prompts_value.get(key, "")).strip_edges().is_empty():
+				errors.append("平十法提示语 %s 不能为空" % key)
 	return errors
 
 
