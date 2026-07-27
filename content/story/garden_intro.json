@@ -6,23 +6,22 @@
     {
       "speaker": "团团熊",
       "text": "萌宠小镇今天要准备一场胡萝卜野餐！",
-      "audio_id": "story.garden_welcome",
-      "prefix_child_name": true
+      "audio_sequence": ["$child_name", "story.garden_welcome"]
     },
     {
       "speaker": "米米兔",
       "text": "我想带一些胡萝卜，可是还不知道该放几个。",
-      "audio_id": "story.mimi_problem"
+      "audio_sequence": ["story.mimi_problem"]
     },
     {
       "speaker": "点点猫",
       "text": "我们一边数，一边把胡萝卜放进篮子，就不会弄错啦！",
-      "audio_id": "story.diandian_plan"
+      "audio_sequence": ["story.diandian_plan"]
     },
     {
       "speaker": "米米兔",
       "text": "你愿意来帮帮我吗？点绿色箭头，我们出发吧！",
-      "audio_id": "story.mimi_invite"
+      "audio_sequence": ["story.mimi_invite"]
     }
   ]
 }

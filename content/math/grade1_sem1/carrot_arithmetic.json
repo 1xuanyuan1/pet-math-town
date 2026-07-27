@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "id": "carrot_arithmetic",
+  "curriculum": {
+    "region": "上海",
+    "grade": 1,
+    "semester": 1,
+    "publisher": "上海教育出版社",
+    "unit": "10以内数的加减法",
+    "alignment_status": "public-outline-aligned",
+    "verified_page_refs": []
+  },
+  "session": {
+    "round_count": 5,
+    "maximum_result": 10
+  },
+  "prompts": {
+    "addition_template": "米米有%d个胡萝卜，点点又送来%d个。现在一共有几个？",
+    "subtraction_template": "米米有%d个胡萝卜，拿走%d个。现在还剩几个？",
+    "retry": "再看看两边的胡萝卜，慢慢数一数。",
+    "correct": ["对啦！", "算对啦！", "真会观察！"],
+    "complete": "加减法任务完成啦！"
+  }
+}

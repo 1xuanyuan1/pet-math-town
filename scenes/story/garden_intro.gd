@@ -153,7 +153,7 @@ func _show_line(index: int) -> void:
 	var line: Dictionary = lines[_line_index]
 	_speaker_label.text = str(line.get("speaker", "萌宠伙伴"))
 	var spoken_text := str(line.get("text", ""))
-	if bool(line.get("prefix_child_name", false)):
+	if "$child_name" in line.get("audio_sequence", []):
 		spoken_text = "%s，%s" % [ProgressStore.get_child_name(), spoken_text]
 	_dialogue_label.text = spoken_text
 	_progress_label.text = _make_progress_text(lines.size(), _line_index)
@@ -174,16 +174,26 @@ func _play_current_line() -> void:
 	if _line_index < 0 or _line_index >= lines.size():
 		return
 	var line: Dictionary = lines[_line_index]
-	var audio_id := str(line.get("audio_id", ""))
 	var spoken_text := str(line.get("text", ""))
-	if bool(line.get("prefix_child_name", false)):
-		var child_name := ProgressStore.get_child_name()
-		AudioManager.play_sequence(
-			[ContentRepository.child_name_audio_id(child_name), audio_id],
-			"%s，%s" % [child_name, spoken_text]
-		)
-	else:
-		AudioManager.play_prompt(audio_id, spoken_text)
+	var sequence := _resolve_audio_sequence(line.get("audio_sequence", []))
+	var child_name := ProgressStore.get_child_name()
+	var fallback_text := (
+		"%s，%s" % [child_name, spoken_text]
+		if "$child_name" in line.get("audio_sequence", [])
+		else spoken_text
+	)
+	AudioManager.play_sequence(sequence, fallback_text)
+
+
+func _resolve_audio_sequence(raw_sequence: Array) -> Array[String]:
+	var resolved: Array[String] = []
+	for value in raw_sequence:
+		var audio_id := str(value)
+		if audio_id == "$child_name":
+			resolved.append(ContentRepository.child_name_audio_id(ProgressStore.get_child_name()))
+		else:
+			resolved.append(audio_id)
+	return resolved
 
 
 func _on_next_pressed() -> void:

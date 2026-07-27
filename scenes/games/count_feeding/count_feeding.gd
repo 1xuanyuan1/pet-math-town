@@ -342,7 +342,17 @@ func _handle_correct() -> void:
 	_feedback_label.text = str(correct_lines[_round_index % correct_lines.size()])
 	_feedback_label.add_theme_color_override("font_color", UIStyles.GREEN_DARK)
 	_mascot.mood = "happy"
-	AudioManager.play_prompt("count_feeding.correct_%02d" % ((_round_index % 3) + 1), _feedback_label.text)
+	var feedback_index := (_round_index % 3) + 1
+	if feedback_index == 3:
+		AudioManager.play_sequence(
+			["common.character_mimi", "count_feeding.eats_just_right"],
+			_feedback_label.text
+		)
+	else:
+		AudioManager.play_prompt(
+			"count_feeding.correct_%02d" % feedback_index,
+			_feedback_label.text
+		)
 	_burst_stars()
 	_pulse_control(_basket_card)
 	await get_tree().create_timer(1.15).timeout
@@ -365,7 +375,7 @@ func _play_current_prompt() -> void:
 		)
 	)
 	var prompt := template % _target_count
-	AudioManager.play_prompt("count_feeding.target_%02d" % _target_count, prompt)
+	AudioManager.play_sequence(_target_audio_sequence(), prompt)
 	_pulse_control(_target_card)
 	_restart_idle_timer()
 
@@ -385,7 +395,7 @@ func _play_round_prompt() -> void:
 	)
 	var target_prompt := template % _target_count
 	AudioManager.play_sequence(
-		[name_audio_id, "count_feeding.target_%02d" % _target_count],
+		[name_audio_id] + _target_audio_sequence(),
 		"%s，%s" % [child_name, target_prompt]
 	)
 	_pulse_control(_target_card)
@@ -399,8 +409,26 @@ func _on_idle_timeout() -> void:
 		_config.get("prompts", {}).get("short_target_template", "请放进%d个胡萝卜。")
 	)
 	var prompt := template % _target_count
-	AudioManager.play_prompt("count_feeding.target_%02d_short" % _target_count, prompt)
+	AudioManager.play_sequence(_short_target_audio_sequence(), prompt)
 	_pulse_control(_target_card)
+
+
+func _target_audio_sequence() -> Array[String]:
+	return [
+		"common.character_mimi",
+		"count_feeding.wants",
+		"common.quantity_%02d" % _target_count,
+		"common.object_carrots",
+		"count_feeding.help_put_in_basket"
+	]
+
+
+func _short_target_audio_sequence() -> Array[String]:
+	return [
+		"count_feeding.please_put_in",
+		"common.quantity_%02d" % _target_count,
+		"common.object_carrots"
+	]
 
 
 func _restart_idle_timer() -> void:

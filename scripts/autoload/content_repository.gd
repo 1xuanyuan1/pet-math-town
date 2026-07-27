@@ -1,6 +1,7 @@
 extends Node
 
 const COUNT_FEEDING_PATH := "res://content/math/grade1_sem1/count_feeding.json"
+const CARROT_ARITHMETIC_PATH := "res://content/math/grade1_sem1/carrot_arithmetic.json"
 const PLAYER_PROFILE_PATH := "res://content/player_profile.json"
 const STORY_INTRO_PATH := "res://content/story/garden_intro.json"
 
@@ -26,6 +27,14 @@ func reload() -> void:
 	else:
 		for message in errors:
 			push_error(message)
+	var arithmetic := load_json_file(CARROT_ARITHMETIC_PATH)
+	var arithmetic_errors := validate_carrot_arithmetic(arithmetic)
+	validation_errors.append_array(arithmetic_errors)
+	if arithmetic_errors.is_empty():
+		_configs[arithmetic["id"]] = arithmetic
+	else:
+		for message in arithmetic_errors:
+			push_error(message)
 	var profile := load_json_file(PLAYER_PROFILE_PATH)
 	var profile_errors := validate_player_profile(profile)
 	validation_errors.append_array(profile_errors)
@@ -46,6 +55,10 @@ func reload() -> void:
 
 func get_game_config(game_id: String) -> Dictionary:
 	return _configs.get(game_id, {}).duplicate(true)
+
+
+func get_arithmetic_config() -> Dictionary:
+	return _configs.get("carrot_arithmetic", {}).duplicate(true)
 
 
 func get_player_profile_config() -> Dictionary:
@@ -116,6 +129,32 @@ static func validate_count_feeding(config: Dictionary) -> PackedStringArray:
 	return errors
 
 
+static func validate_carrot_arithmetic(config: Dictionary) -> PackedStringArray:
+	var errors := PackedStringArray()
+	if int(config.get("schema_version", 0)) != 1:
+		errors.append("carrot_arithmetic.schema_version 必须为 1")
+	if config.get("id", "") != "carrot_arithmetic":
+		errors.append("carrot_arithmetic.id 不正确")
+	var session_value: Variant = config.get("session")
+	if not session_value is Dictionary:
+		errors.append("carrot_arithmetic.session 必须是对象")
+		return errors
+	var session: Dictionary = session_value
+	if int(session.get("round_count", 0)) <= 0:
+		errors.append("carrot_arithmetic.session.round_count 必须大于 0")
+	var maximum := int(session.get("maximum_result", 0))
+	if maximum < 5 or maximum > 10:
+		errors.append("首版加减法结果必须位于 5–10")
+	var prompts_value: Variant = config.get("prompts")
+	if not prompts_value is Dictionary:
+		errors.append("carrot_arithmetic.prompts 必须是对象")
+	else:
+		for key in ["addition_template", "subtraction_template", "retry", "complete"]:
+			if str(prompts_value.get(key, "")).strip_edges().is_empty():
+				errors.append("加减法提示语 %s 不能为空" % key)
+	return errors
+
+
 static func validate_player_profile(config: Dictionary) -> PackedStringArray:
 	var errors := PackedStringArray()
 	if int(config.get("schema_version", 0)) != 1:
@@ -163,7 +202,6 @@ static func validate_story_intro(config: Dictionary) -> PackedStringArray:
 	if not lines_value is Array or lines_value.size() < 3:
 		errors.append("故事对话至少需要三句")
 		return errors
-	var audio_ids := {}
 	for index in range(lines_value.size()):
 		var line_value: Variant = lines_value[index]
 		if not line_value is Dictionary:
@@ -174,10 +212,14 @@ static func validate_story_intro(config: Dictionary) -> PackedStringArray:
 			errors.append("故事对话 %d 缺少角色" % index)
 		if str(line.get("text", "")).strip_edges().is_empty():
 			errors.append("故事对话 %d 缺少文案" % index)
-		var audio_id := str(line.get("audio_id", "")).strip_edges()
-		if audio_id.is_empty():
-			errors.append("故事对话 %d 缺少语音 id" % index)
-		elif audio_ids.has(audio_id):
-			errors.append("故事语音 id 不能重复：%s" % audio_id)
-		audio_ids[audio_id] = true
+		var sequence_value: Variant = line.get("audio_sequence")
+		if not sequence_value is Array or sequence_value.is_empty():
+			errors.append("故事对话 %d 缺少语音序列" % index)
+			continue
+		for segment_value in sequence_value:
+			var segment := str(segment_value).strip_edges()
+			if segment.is_empty():
+				errors.append("故事对话 %d 的语音片段不能为空" % index)
+			elif segment.begins_with("$") and segment != "$child_name":
+				errors.append("故事对话 %d 使用了未知语音占位符：%s" % [index, segment])
 	return errors

@@ -1,10 +1,16 @@
 class_name CarrotButton
 extends Button
 
+const CARROT_TEXTURE := preload("res://assets/art/items/carrot_icon.png")
+
 var unavailable := false:
 	set(value):
 		unavailable = value
 		disabled = value
+		queue_redraw()
+var removed := false:
+	set(value):
+		removed = value
 		queue_redraw()
 var compact := false:
 	set(value):
@@ -52,22 +58,20 @@ func _draw() -> void:
 		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 		return
 
-	var top_y := 32.0 * scale_value
-	var bottom_y := 83.0 * scale_value
-	var half_width := 18.0 * scale_value
-	draw_circle(Vector2(center_x, top_y), half_width, Color("#F59A45"))
-	draw_colored_polygon(PackedVector2Array([
-		Vector2(center_x - half_width, top_y),
-		Vector2(center_x + half_width, top_y),
-		Vector2(center_x + 4.0 * scale_value, bottom_y),
-		Vector2(center_x - 3.0 * scale_value, bottom_y + 4.0 * scale_value)
-	]), Color("#F28B36"))
-	var leaf_green := Color("#58A966")
-	draw_line(Vector2(center_x, top_y - 8.0 * scale_value), Vector2(center_x, 7.0 * scale_value), leaf_green, 7.0 * scale_value, true)
-	draw_line(Vector2(center_x - 3.0 * scale_value, top_y - 5.0 * scale_value), Vector2(center_x - 18.0 * scale_value, 12.0 * scale_value), leaf_green, 7.0 * scale_value, true)
-	draw_line(Vector2(center_x + 3.0 * scale_value, top_y - 5.0 * scale_value), Vector2(center_x + 18.0 * scale_value, 12.0 * scale_value), leaf_green, 7.0 * scale_value, true)
-	for stripe in range(3):
-		var y := (47.0 + stripe * 11.0) * scale_value
-		var width := (10.0 - stripe * 2.0) * scale_value
-		draw_line(Vector2(center_x - width, y), Vector2(center_x + 2.0 * scale_value, y + 2.0 * scale_value), Color(0.78, 0.34, 0.12, 0.65), 2.0 * scale_value, true)
-
+	var texture_size := CARROT_TEXTURE.get_size()
+	var fit_scale := minf(size.x * 0.72 / texture_size.x, size.y * 0.88 / texture_size.y)
+	var draw_size := texture_size * fit_scale
+	var draw_position := Vector2(center_x - draw_size.x * 0.5, (size.y - draw_size.y) * 0.5)
+	var carrot_color := Color(1.0, 1.0, 1.0, 0.42) if removed else Color.WHITE
+	draw_texture_rect(CARROT_TEXTURE, Rect2(draw_position, draw_size), false, carrot_color)
+	if removed:
+		var badge_center := Vector2(center_x + draw_size.x * 0.36, draw_position.y + draw_size.y * 0.24)
+		var badge_radius := 14.0 * scale_value
+		draw_circle(badge_center, badge_radius, Color("#EF805C"))
+		draw_line(
+			badge_center - Vector2(badge_radius * 0.48, 0),
+			badge_center + Vector2(badge_radius * 0.48, 0),
+			Color.WHITE,
+			4.0 * scale_value,
+			true
+		)

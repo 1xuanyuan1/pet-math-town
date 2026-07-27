@@ -10,11 +10,17 @@ func _ready() -> void:
 	await get_tree().process_frame
 	var arguments := OS.get_cmdline_user_args()
 	if arguments.size() > 1:
-		var selected_count := clampi(int(arguments[1]), 0, 10)
-		var game := main.get_child(0)
-		for index in range(selected_count):
-			game.call("_on_supply_pressed", index)
-		await get_tree().process_frame
+		var requested_view := str(arguments[1])
+		if requested_view in ["addition", "subtraction"]:
+			main.call("_show_arithmetic", requested_view)
+			await get_tree().process_frame
+			await get_tree().process_frame
+		else:
+			var selected_count := clampi(int(requested_view), 0, 10)
+			var game := main.get_child(0)
+			for index in range(selected_count):
+				game.call("_on_supply_pressed", index)
+			await get_tree().process_frame
 	RenderingServer.force_draw(false)
 	await get_tree().process_frame
 	var image := get_viewport().get_texture().get_image()

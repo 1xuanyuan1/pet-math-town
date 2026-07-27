@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "defaults": {
+    "model": "speech-2.8-hd",
+    "profile": "narrator",
+    "language_boost": "Chinese"
+  },
+  "items": [
+    {"id": "has", "text": "有", "output": "arithmetic/has.ogg"},
+    {"id": "brings", "text": "又送来", "output": "arithmetic/brings.ogg"},
+    {"id": "take_away", "text": "拿走", "output": "arithmetic/take_away.ogg"},
+    {"id": "how_many_total", "text": "现在一共有几个？", "output": "arithmetic/how_many_total.ogg"},
+    {"id": "how_many_left", "text": "现在还剩几个？", "output": "arithmetic/how_many_left.ogg"},
+    {"id": "retry", "text": "再看看两边的胡萝卜，慢慢数一数。", "output": "arithmetic/retry.ogg", "profile": "mentor"},
+    {"id": "correct_01", "text": "对啦！", "output": "arithmetic/correct_01.ogg", "profile": "reward"},
+    {"id": "correct_02", "text": "算对啦！", "output": "arithmetic/correct_02.ogg", "profile": "reward"},
+    {"id": "correct_03", "text": "真会观察！", "output": "arithmetic/correct_03.ogg", "profile": "reward"},
+    {"id": "complete", "text": "加减法任务完成啦！", "output": "arithmetic/complete.ogg", "profile": "reward"}
+  ]
+}
