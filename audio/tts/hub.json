@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "defaults": {
+    "model": "speech-2.8-hd",
+    "profile": "narrator",
+    "language_boost": "Chinese"
+  },
+  "items": [
+    {
+      "id": "choose_game",
+      "text": "想玩哪一个？点一张大卡片开始吧！",
+      "output": "hub/choose_game.ogg"
+    }
+  ]
+}

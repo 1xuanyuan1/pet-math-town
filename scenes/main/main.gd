@@ -1,6 +1,7 @@
 extends Control
 
 const STORY_INTRO_SCENE := preload("res://scenes/story/garden_intro.tscn")
+const TOWN_HUB_SCENE := preload("res://scenes/hub/town_hub.tscn")
 const COUNT_FEEDING_SCENE := preload("res://scenes/games/count_feeding/count_feeding.tscn")
 
 var _current_view: Control
@@ -16,7 +17,25 @@ func _show_story_intro() -> void:
 	_current_view = story
 	add_child(story)
 	story.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	story.finished.connect(_show_count_feeding)
+	story.finished.connect(_show_town_hub)
+
+
+func _show_town_hub() -> void:
+	_clear_current_view()
+	var hub := TOWN_HUB_SCENE.instantiate()
+	_current_view = hub
+	add_child(hub)
+	hub.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	hub.route_selected.connect(_on_route_selected)
+	hub.story_requested.connect(_show_story_intro)
+	hub.set_route_available("addition", false)
+	hub.set_route_available("subtraction", false)
+	hub.set_route_available("ten_frame", false)
+
+
+func _on_route_selected(route_id: String) -> void:
+	if route_id == "count_feeding":
+		_show_count_feeding()
 
 
 func _show_count_feeding() -> void:
@@ -26,6 +45,7 @@ func _show_count_feeding() -> void:
 	add_child(game)
 	if game is Control:
 		game.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	game.exit_requested.connect(_show_town_hub)
 
 
 func _clear_current_view() -> void:

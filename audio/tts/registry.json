@@ -5,6 +5,7 @@
   "story.mimi_problem": "res://audio/tts/generated/story/mimi_problem.ogg",
   "story.diandian_plan": "res://audio/tts/generated/story/diandian_plan.ogg",
   "story.mimi_invite": "res://audio/tts/generated/story/mimi_invite.ogg",
+  "hub.choose_game": "res://audio/tts/generated/hub/choose_game.ogg",
   "count_feeding.target_01": "res://audio/tts/generated/count_feeding/target_01.ogg",
   "count_feeding.target_02": "res://audio/tts/generated/count_feeding/target_02.ogg",
   "count_feeding.target_03": "res://audio/tts/generated/count_feeding/target_03.ogg",

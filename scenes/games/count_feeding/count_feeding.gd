@@ -1,5 +1,7 @@
 extends Control
 
+signal exit_requested
+
 var _config: Dictionary = {}
 var _sequence: Array[int] = []
 var _round_index := 0
@@ -53,6 +55,20 @@ func _build_ui() -> void:
 	top_bar.custom_minimum_size = Vector2(0, 58)
 	top_bar.add_theme_constant_override("separation", 14)
 	page.add_child(top_bar)
+
+	var back_button := Button.new()
+	back_button.text = "←"
+	back_button.tooltip_text = "回到萌宠小镇"
+	back_button.custom_minimum_size = Vector2(70, 58)
+	back_button.add_theme_font_size_override("font_size", 30)
+	UIStyles.apply_button(
+		back_button,
+		Color("#FFF2D4"),
+		Color("#FFF9E7"),
+		Color("#E4C98E")
+	)
+	back_button.pressed.connect(_request_exit)
+	top_bar.add_child(back_button)
 
 	var title := _make_label("萌宠小镇 · 数数配餐", 28, UIStyles.INK, false)
 	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -225,6 +241,11 @@ func _show_content_error() -> void:
 	_feedback_label.add_theme_color_override("font_color", Color("#C44747"))
 	_confirm_button.disabled = true
 	_replay_button.disabled = true
+
+
+func _request_exit() -> void:
+	AudioManager.stop_voice()
+	exit_requested.emit()
 
 
 func _start_session() -> void:

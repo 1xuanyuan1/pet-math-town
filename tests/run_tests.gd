@@ -91,8 +91,12 @@ func _test_tts_manifests() -> void:
 	var story_manifest: Dictionary = JSON.parse_string(story_manifest_file.get_as_text())
 	var story_items: Array = story_manifest.get("items", [])
 	_check(story_items.size() == 4, "剧情序章 TTS 应包含四句对话")
+	var hub_manifest_file := FileAccess.open("res://audio/tts/hub.json", FileAccess.READ)
+	var hub_manifest: Dictionary = JSON.parse_string(hub_manifest_file.get_as_text())
+	var hub_items: Array = hub_manifest.get("items", [])
+	_check(hub_items.size() == 1, "小镇选关应包含一条语音引导")
 	_check(
-		registry.size() == items.size() + story_items.size() + 2,
+		registry.size() == items.size() + story_items.size() + hub_items.size() + 2,
 		"Godot 音频注册表应覆盖游戏、剧情与名字语音"
 	)
 	var seen_ids := {}
@@ -128,6 +132,7 @@ func _test_tts_manifests() -> void:
 		var story_item: Dictionary = story_item_value
 		var story_registry_id := "story.%s" % str(story_item.get("id"))
 		_check(registry.has(story_registry_id), "注册表缺少剧情语音：%s" % story_registry_id)
+	_check(registry.has("hub.choose_game"), "注册表应包含小镇选关引导")
 
 
 func _test_progress_store() -> void:
@@ -168,6 +173,13 @@ func _test_story_flow() -> void:
 		dialogue != null and ProgressStore.get_child_name() in dialogue.text,
 		"剧情首句应包含小主人称呼"
 	)
+	main.call("_show_town_hub")
+	await get_tree().process_frame
+	var hub_view := main.get("_current_view") as Control
+	_check(hub_view != null and hub_view.name == "TownHub", "剧情结束后应进入小镇选关")
+	var route_buttons: Dictionary = hub_view.get("_route_buttons")
+	_check(not bool((route_buttons["count_feeding"] as Button).disabled), "数数配餐应可选")
+	_check(bool((route_buttons["addition"] as Button).disabled), "未接入的加法关应保持锁定")
 	main.call("_show_count_feeding")
 	await get_tree().process_frame
 	var game_view := main.get("_current_view") as Control

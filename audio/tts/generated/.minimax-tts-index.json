@@ -243,6 +243,15 @@
       "trace_id": "06b64052abb5d63bd9d2cb3d16421a46",
       "usage_characters": 17
     },
+    "hub/choose_game.ogg": {
+      "audio_length_ms": 3852,
+      "audio_size_bytes": 39595,
+      "generated_at": "2026-07-27T08:10:58.604016+00:00",
+      "id": "choose_game",
+      "request_sha256": "4d10b325e17974c22919ddbfe8688f4d00e2ac1c94a837989eefeaadbf16a4cb",
+      "trace_id": "06b6459116190743bf8c3c9cd5c748e1",
+      "usage_characters": 30
+    },
     "story/diandian_plan.ogg": {
       "audio_length_ms": 5076,
       "audio_size_bytes": 51874,
