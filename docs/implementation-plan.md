@@ -107,7 +107,9 @@
 
 - [ ] 根据教材目录或内页核对知识点边界和术语。
 - [ ] 未经确认的“第几个”、数轴等内容保持禁用。
-- [ ] 验证 Web 导出、Android APK、横屏适配、触摸、中文字体、音频和离线运行。
+- [x] 验证 Web Release 导出、GitHub Pages 加载、WebGL 画布、中文字体和浏览器控制台。
+- [x] 验证 arm64 Android Debug APK 导出、调试签名、压缩结构和凭证扫描。
+- [ ] 在 Android 真机验证横屏触摸、设备音频和离线完整局，并配置正式发布签名。
 - [ ] 首版稳定后评估微信小游戏适配成本与风险。
 
 验收：Web 和 APK 可在目标设备离线完成整局；项目不包含 API Key、教材扫描件或未经授权素材。
@@ -206,6 +208,15 @@
 - Godot 4.7 最终导入和 1740 项自动检查通过；Web Debug 与签名 Android Debug APK 均导出成功。
 - 对 Web PCK 与 Android APK 完成静默凭证扫描，未发现 MiniMax 环境变量名或 API Key；导出物继续保留在被忽略的 `build/` 目录。
 - 真机触摸、设备音频与离线完整局仍保留在 M7 发布验收中，不因本机 Debug 导出成功而提前标记完成。
+
+### 2026-07-28：v0.1.0 GitHub 预发布
+
+- 创建 annotated tag `v0.1.0` 和 GitHub Pre-release，上传可安装的 arm64 调试签名 APK。
+- 使用独立 `gh-pages` 分支部署 Web Release，在线地址为 <https://1xuanyuan1.github.io/pet-math-town/>。
+- 真实 Chromium 浏览器首次验收发现 Web 缺少系统中文字体回退；补入 OFL 许可的 Noto Sans SC 游戏子集，并将不受字体支持的三个箭头替换为等价图形字符。
+- 修复后真实浏览器显示中文与按钮符号正常，1280×633 Web 画布完成渲染；控制台只有 Godot/WebGL 启动信息，没有运行错误。
+- 最终 Godot 4.7 导入与 1753 项自动检查通过；重新导出的 Web PCK 和 APK 凭证扫描通过。
+- APK SHA-256：`bfb32afc54b145b8f5daed59efa5334f62fc1c39cc708ad9c5db577c75c07d22`。
 
 ## 4. 技术结构
 
