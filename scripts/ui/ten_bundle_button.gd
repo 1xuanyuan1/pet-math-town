@@ -25,8 +25,8 @@ func _draw() -> void:
 	var tint := Color(1, 1, 1, 0.35) if borrowed else Color.WHITE
 	for row in range(2):
 		for column in range(5):
-			var position := start + Vector2(column * 22.5, row * 38.0)
-			draw_texture_rect(CARROT_TEXTURE, Rect2(position, carrot_size), false, tint)
+			var carrot_position := start + Vector2(column * 22.5, row * 38.0)
+			draw_texture_rect(CARROT_TEXTURE, Rect2(carrot_position, carrot_size), false, tint)
 	var ribbon_color := Color(0.78, 0.51, 0.24, 0.38) if borrowed else Color("#C7863F")
 	var ribbon_y := size.y * 0.55
 	draw_rect(Rect2(4, ribbon_y, size.x - 8, 10), ribbon_color, true)

@@ -228,7 +228,7 @@ func _render_round() -> void:
 	_render_ones(question)
 
 
-func _render_ten_frame(question: Dictionary) -> void:
+func _render_ten_frame(_question: Dictionary) -> void:
 	_clear_children(_ten_grid)
 	for slot_index in range(10):
 		var slot := PanelContainer.new()

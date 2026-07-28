@@ -48,6 +48,7 @@ static func generate_sequence(
 
 
 static func build_question(left: int, right: int) -> Dictionary:
+	@warning_ignore("integer_division")
 	var tens := left / 10
 	var ones := left % 10
 	var tens_left := tens - 1
