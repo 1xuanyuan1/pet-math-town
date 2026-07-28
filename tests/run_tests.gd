@@ -28,6 +28,7 @@ func _run() -> void:
 	await _test_make_ten_round()
 	await _test_break_ten_round()
 	await _test_flat_ten_round()
+	await _test_borrow_ten_round()
 	AudioManager.stop_voice()
 	await get_tree().process_frame
 	if _failures.is_empty():
@@ -504,7 +505,7 @@ func _test_story_flow() -> void:
 	_check(not bool((strategy_buttons["make_ten"] as Button).disabled), "凑十小桥应已解锁")
 	_check(not bool((strategy_buttons["break_ten"] as Button).disabled), "破十山洞应已解锁")
 	_check(not bool((strategy_buttons["flat_ten"] as Button).disabled), "平十阶梯应已解锁")
-	_check(bool((strategy_buttons["borrow_ten"] as Button).disabled), "借十挑战应保持建设中")
+	_check(not bool((strategy_buttons["borrow_ten"] as Button).disabled), "借十挑战应已解锁")
 	var strategy_icon_paths: Dictionary = {}
 	for route_id in ["make_ten", "break_ten", "flat_ten", "borrow_ten"]:
 		var texture_views := (strategy_buttons[route_id] as Button).find_children(
@@ -845,6 +846,110 @@ func _test_flat_ten_round() -> void:
 	_check(int(ProgressStore.data.get("sessions_completed")) == 1, "平十法完整一局应记录一次会话")
 	_check(ProgressStore.data.get("last_played_game") == "flat_ten", "平十法应记录为最近游戏")
 	_check(game.get("_session_overlay") != null, "平十法完成后应显示庆祝界面")
+
+	AudioManager.stop_voice()
+	game.free()
+	await get_tree().process_frame
+	if FileAccess.file_exists(game_test_path):
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(game_test_path))
+	ProgressStore.storage_path = storage_path_backup
+	ProgressStore.data = progress_backup
+
+
+func _test_borrow_ten_round() -> void:
+	var progress_backup: Dictionary = ProgressStore.data.duplicate(true)
+	var storage_path_backup: String = ProgressStore.storage_path
+	var game_test_path := "user://borrow-ten-progress-test-%d.json" % Time.get_ticks_usec()
+	ProgressStore.data = ProgressStore.default_data()
+	ProgressStore.storage_path = game_test_path
+	var game_scene := load("res://scenes/games/borrow_ten/borrow_ten.tscn") as PackedScene
+	var game := game_scene.instantiate()
+	get_tree().root.add_child(game)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	game.set("_answer_feedback_seconds", 0.01)
+
+	var questions: Array = game.get("_questions")
+	_check(questions.size() == 5, "借十挑战一局应有五回合")
+	var first_question: Dictionary = questions[0]
+	var first_sequence: Array[String] = game.call("_unbundle_audio_sequence", first_question)
+	_check(first_sequence.size() == 4, "借十题应复用角色、原数量、减数和拆捆指令")
+	_check(first_sequence[0] == "common.character_mimi_continuing", "借十题中的米米必须独立播放")
+	_check(
+		first_sequence[1] == "borrow_ten.has_%02d" % int(first_question.get("left")),
+		"借十题应使用两位数自然数量短句"
+	)
+	_check(
+		first_sequence[2] == "arithmetic.take_away_%02d" % int(first_question.get("right")),
+		"借十题应复用已有拿走数量语音"
+	)
+	_check(first_sequence[3] == "borrow_ten.unbundle", "借十题必须提示先拆开一捆十根")
+	_check(
+		(game.get("_tens_grid") as GridContainer).get_child_count()
+		== int(first_question.get("tens")),
+		"借十挑战必须按十位显示对应数量的十根捆"
+	)
+	_check(
+		(game.get("_ones_grid") as GridContainer).get_child_count()
+		== int(first_question.get("ones")),
+		"借十前个位区必须只显示原有个位胡萝卜"
+	)
+	game.call("_on_confirm_pressed")
+	_check(game.get("_stage") == "unbundle", "没有选择十根捆时不能进入个位步骤")
+	_check("十位" in (game.get("_feedback_label") as Label).text, "未借十时应提示观察十位")
+
+	for expected_round in range(5):
+		var question: Dictionary = game.call("_current_question")
+		game.call("_on_bundle_pressed", 0)
+		_check(int(game.get("_borrowed_bundle_index")) == 0, "孩子应能选择一捆十根拆开")
+		game.call("_on_confirm_pressed")
+		_check(game.get("_stage") == "take", "拆开十根捆后应进入个位拿走步骤")
+		_check(
+			(game.get("_ones_grid") as GridContainer).get_child_count()
+			== int(question.get("borrowed_ones")),
+			"借十后个位必须显示十加原个位的全部胡萝卜"
+		)
+		_check(
+			"%d + %d − %d" % [
+				int(question.get("tens_left")) * 10,
+				question.get("borrowed_ones"),
+				question.get("right")
+			] in (game.get("_equation_label") as Label).text,
+			"借十挑战必须显示剩余十位与重组个位"
+		)
+		for ones_index in range(int(question.get("right"))):
+			game.call("_on_ones_carrot_pressed", ones_index)
+		_check(
+			game.get("_ones_removed_indices").size() == int(question.get("right")),
+			"借十后应从重组个位中拿走一位减数"
+		)
+		game.call("_on_confirm_pressed")
+		_check(game.get("_stage") == "answer", "个位拿完后应进入答案步骤")
+		var answer_row := game.get("_answer_row") as HBoxContainer
+		_check(answer_row.get_child_count() == 3, "借十挑战应提供三个答案")
+		var first_answer_content := _find_button_content(answer_row.get_child(0) as Button)
+		_check(first_answer_content != null, "借十答案按钮必须保留数字内容容器")
+		_check(first_answer_content.get_child_count() == 1, "借十答案按钮只显示大数字")
+		var answer := int(question.get("answer"))
+		var correct_button: Button
+		var wrong_button: Button
+		for candidate in answer_row.get_children():
+			if int((candidate as Button).get_meta("answer_value")) == answer:
+				correct_button = candidate as Button
+			else:
+				wrong_button = candidate as Button
+		if expected_round == 0:
+			game.call("_on_answer_pressed", int(wrong_button.get_meta("answer_value")), wrong_button)
+			_check(not bool(game.get("_round_locked")), "借十挑战答错后不应锁定回合")
+			_check("几捆" in (game.get("_feedback_label") as Label).text, "借十答错应提示数十位和个位")
+		_check(correct_button != null, "每道借十题必须显示正确答案")
+		game.call("_on_answer_pressed", answer, correct_button)
+		await get_tree().create_timer(0.03).timeout
+
+	_check(int(ProgressStore.data.get("rounds_completed")) == 5, "借十挑战完整一局应记录五个回合")
+	_check(int(ProgressStore.data.get("sessions_completed")) == 1, "借十挑战完整一局应记录一次会话")
+	_check(ProgressStore.data.get("last_played_game") == "borrow_ten", "借十挑战应记录为最近游戏")
+	_check(game.get("_session_overlay") != null, "借十挑战完成后应显示庆祝界面")
 
 	AudioManager.stop_voice()
 	game.free()

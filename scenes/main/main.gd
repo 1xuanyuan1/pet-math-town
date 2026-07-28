@@ -10,6 +10,7 @@ const CARROT_ARITHMETIC_SCENE := preload(
 const MAKE_TEN_SCENE := preload("res://scenes/games/make_ten/make_ten.tscn")
 const BREAK_TEN_SCENE := preload("res://scenes/games/break_ten/break_ten.tscn")
 const FLAT_TEN_SCENE := preload("res://scenes/games/flat_ten/flat_ten.tscn")
+const BORROW_TEN_SCENE := preload("res://scenes/games/borrow_ten/borrow_ten.tscn")
 
 var _current_view: Control
 
@@ -60,7 +61,7 @@ func _show_strategy_hub() -> void:
 	hub.set_route_available("make_ten", true)
 	hub.set_route_available("break_ten", true)
 	hub.set_route_available("flat_ten", true)
-	hub.set_route_available("borrow_ten", false)
+	hub.set_route_available("borrow_ten", true)
 
 
 func _on_strategy_route_selected(route_id: String) -> void:
@@ -70,6 +71,8 @@ func _on_strategy_route_selected(route_id: String) -> void:
 		_show_break_ten()
 	elif route_id == "flat_ten":
 		_show_flat_ten()
+	elif route_id == "borrow_ten":
+		_show_borrow_ten()
 
 
 func _show_count_feeding() -> void:
@@ -113,6 +116,15 @@ func _show_break_ten() -> void:
 func _show_flat_ten() -> void:
 	_clear_current_view()
 	var game := FLAT_TEN_SCENE.instantiate()
+	_current_view = game
+	add_child(game)
+	game.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	game.exit_requested.connect(_show_strategy_hub)
+
+
+func _show_borrow_ten() -> void:
+	_clear_current_view()
+	var game := BORROW_TEN_SCENE.instantiate()
 	_current_view = game
 	add_child(game)
 	game.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
