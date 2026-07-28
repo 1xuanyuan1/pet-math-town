@@ -38,6 +38,7 @@ environment/defaults/default_clear_color=Color(0.929, 0.976, 0.945, 1)
 
 [gui]
 
+theme/custom_font="res://assets/fonts/NotoSansSC-GameSubset.ttf"
 theme/default_font_multichannel_signed_distance_field=true
 
 [input_devices]

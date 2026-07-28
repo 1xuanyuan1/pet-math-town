@@ -17,6 +17,7 @@ func _check(condition: bool, message: String) -> void:
 
 func _run() -> void:
 	_test_content()
+	_test_embedded_font()
 	_test_question_generator()
 	_test_tts_manifests()
 	_test_progress_store()
@@ -40,6 +41,21 @@ func _run() -> void:
 		for failure in _failures:
 			print(" - %s" % failure)
 		get_tree().quit(1)
+
+
+func _test_embedded_font() -> void:
+	var font_path := str(ProjectSettings.get_setting("gui/theme/custom_font", ""))
+	_check(
+		font_path == "res://assets/fonts/NotoSansSC-GameSubset.ttf",
+		"Web 与 Android 必须使用项目内嵌中文字体"
+	)
+	_check(ResourceLoader.exists(font_path), "项目内嵌中文字体资源必须存在")
+	var font := load(font_path) as Font
+	_check(font != null, "项目内嵌中文字体必须可以加载")
+	if font == null:
+		return
+	for glyph in ["香", "凑", "借", "宝", "贝", "»", "→", "▶", "✓", "★"]:
+		_check(font.has_char(glyph.unicode_at(0)), "项目内嵌字体必须包含界面字符：%s" % glyph)
 
 
 func _test_content() -> void:

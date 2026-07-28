@@ -509,7 +509,7 @@ func _show_session_overlay() -> void:
 	var subheading := _make_label("米米还想再玩一次", 25, UIStyles.INK)
 	box.add_child(subheading)
 	var replay := Button.new()
-	replay.text = "↻  再玩一次"
+	replay.text = "▶  再玩一次"
 	replay.custom_minimum_size = Vector2(300, 78)
 	replay.add_theme_font_size_override("font_size", 30)
 	UIStyles.apply_button(replay, UIStyles.GREEN, Color("#69CA88"), UIStyles.GREEN_DARK)

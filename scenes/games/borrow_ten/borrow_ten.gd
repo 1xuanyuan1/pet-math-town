@@ -108,7 +108,7 @@ func _build_ui() -> void:
 	visual_row.add_child(step_column)
 	_step_label = _make_label("第 1 步 · 十位借一", 21, Color("#6E7D70"))
 	step_column.add_child(_step_label)
-	_step_symbol_label = _make_label("➜", 50, Color("#D77D61"))
+	_step_symbol_label = _make_label("→", 50, Color("#D77D61"))
 	step_column.add_child(_step_symbol_label)
 	_step_hint_label = _make_label("个位不够减", 21, Color("#9D563F"))
 	_step_hint_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -213,7 +213,7 @@ func _render_round() -> void:
 	match _stage:
 		UNBUNDLE_STAGE:
 			_step_label.text = "第 1 步 · 十位借一"
-			_step_symbol_label.text = "➜"
+			_step_symbol_label.text = "→"
 			_step_hint_label.text = "个位 %d 不够减 %d" % [question.get("ones"), right]
 			_tens_title.text = "十位 · %d 捆十根" % question.get("tens")
 			_ones_title.text = "个位 · %d 个" % question.get("ones")

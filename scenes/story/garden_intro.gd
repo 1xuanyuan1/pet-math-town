@@ -50,7 +50,7 @@ func _build_ui() -> void:
 	add_child(title)
 
 	var skip_button := Button.new()
-	skip_button.text = "↠"
+	skip_button.text = "»"
 	skip_button.tooltip_text = "跳过故事"
 	skip_button.custom_minimum_size = Vector2(68, 54)
 	skip_button.position = Vector2(1182, 20)
@@ -130,7 +130,7 @@ func _build_ui() -> void:
 	row.add_child(_replay_button)
 
 	_next_button = Button.new()
-	_next_button.text = "➜"
+	_next_button.text = "→"
 	_next_button.tooltip_text = "下一句"
 	_next_button.custom_minimum_size = Vector2(98, 106)
 	_next_button.add_theme_font_size_override("font_size", 42)
@@ -157,7 +157,7 @@ func _show_line(index: int) -> void:
 		spoken_text = "%s，%s" % [ProgressStore.get_child_name(), spoken_text]
 	_dialogue_label.text = spoken_text
 	_progress_label.text = _make_progress_text(lines.size(), _line_index)
-	_next_button.text = "✓" if _line_index == lines.size() - 1 else "➜"
+	_next_button.text = "✓" if _line_index == lines.size() - 1 else "→"
 	_next_button.tooltip_text = "开始帮忙" if _line_index == lines.size() - 1 else "下一句"
 	_play_current_line()
 
