@@ -5,6 +5,7 @@ const CARROT_ARITHMETIC_PATH := "res://content/math/grade1_sem1/carrot_arithmeti
 const MAKE_TEN_PATH := "res://content/math/grade1_sem1/make_ten.json"
 const BREAK_TEN_PATH := "res://content/math/grade1_sem1/break_ten.json"
 const FLAT_TEN_PATH := "res://content/math/grade1_sem1/flat_ten.json"
+const BORROW_TEN_PATH := "res://content/math/grade1_sem1/borrow_ten.json"
 const PLAYER_PROFILE_PATH := "res://content/player_profile.json"
 const STORY_INTRO_PATH := "res://content/story/garden_intro.json"
 
@@ -62,6 +63,14 @@ func reload() -> void:
 	else:
 		for message in flat_ten_errors:
 			push_error(message)
+	var borrow_ten := load_json_file(BORROW_TEN_PATH)
+	var borrow_ten_errors := validate_borrow_ten(borrow_ten)
+	validation_errors.append_array(borrow_ten_errors)
+	if borrow_ten_errors.is_empty():
+		_configs[borrow_ten["id"]] = borrow_ten
+	else:
+		for message in borrow_ten_errors:
+			push_error(message)
 	var profile := load_json_file(PLAYER_PROFILE_PATH)
 	var profile_errors := validate_player_profile(profile)
 	validation_errors.append_array(profile_errors)
@@ -98,6 +107,10 @@ func get_break_ten_config() -> Dictionary:
 
 func get_flat_ten_config() -> Dictionary:
 	return _configs.get("flat_ten", {}).duplicate(true)
+
+
+func get_borrow_ten_config() -> Dictionary:
+	return _configs.get("borrow_ten", {}).duplicate(true)
 
 
 func get_player_profile_config() -> Dictionary:
@@ -365,6 +378,69 @@ static func validate_flat_ten(config: Dictionary) -> PackedStringArray:
 		]:
 			if str(prompts_value.get(key, "")).strip_edges().is_empty():
 				errors.append("平十法提示语 %s 不能为空" % key)
+	return errors
+
+
+static func validate_borrow_ten(config: Dictionary) -> PackedStringArray:
+	var errors := PackedStringArray()
+	if int(config.get("schema_version", 0)) != 1:
+		errors.append("borrow_ten.schema_version 必须为 1")
+	if config.get("id", "") != "borrow_ten":
+		errors.append("borrow_ten.id 不正确")
+	var session_value: Variant = config.get("session")
+	if not session_value is Dictionary:
+		errors.append("borrow_ten.session 必须是对象")
+		return errors
+	var session: Dictionary = session_value
+	var round_count := int(session.get("round_count", 0))
+	if round_count <= 0:
+		errors.append("borrow_ten.session.round_count 必须大于 0")
+	if int(session.get("maximum_minuend", 0)) != 32:
+		errors.append("借十挑战首版最大被减数必须为 32")
+	var pool_value: Variant = session.get("question_pool")
+	if not pool_value is Array or pool_value.size() < round_count:
+		errors.append("borrow_ten.question_pool 不能少于每局题数")
+		return errors
+	var seen_pairs := {}
+	for index in range(pool_value.size()):
+		var question_value: Variant = pool_value[index]
+		if not question_value is Dictionary:
+			errors.append("借十题 %d 必须是对象" % index)
+			continue
+		var question: Dictionary = BorrowTenQuestionGenerator.build_question(
+			int(question_value.get("left", 0)),
+			int(question_value.get("right", 0))
+		)
+		if question.is_empty():
+			errors.append("借十题 %d 必须是个位不够减的两位数减一位数" % index)
+			continue
+		if int(question.get("left")) > int(session.get("maximum_minuend", 0)):
+			errors.append("借十题 %d 超出首版最大被减数" % index)
+		var pair_key := "%d-%d" % [question.get("left"), question.get("right")]
+		if seen_pairs.has(pair_key):
+			errors.append("借十题不能重复：%s" % pair_key)
+		seen_pairs[pair_key] = true
+	var curriculum: Dictionary = config.get("curriculum", {})
+	if curriculum.get("alignment_status", "") != "extension-pending-textbook-page-verification":
+		errors.append("借十挑战必须明确标记为教材范围待核验的扩展内容")
+	var prompts_value: Variant = config.get("prompts")
+	if not prompts_value is Dictionary:
+		errors.append("borrow_ten.prompts 必须是对象")
+	else:
+		for key in [
+			"question_template",
+			"unbundle",
+			"retry_unbundle",
+			"regrouped",
+			"take_template",
+			"retry_take",
+			"choose_answer",
+			"retry_answer",
+			"correct",
+			"complete"
+		]:
+			if str(prompts_value.get(key, "")).strip_edges().is_empty():
+				errors.append("借十挑战提示语 %s 不能为空" % key)
 	return errors
 
 

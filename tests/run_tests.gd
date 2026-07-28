@@ -130,6 +130,23 @@ func _test_content() -> void:
 		not repository_script.validate_flat_ten(invalid_flat_ten).is_empty(),
 		"不能先减到十再减余数的平十题必须被拒绝"
 	)
+	var borrow_ten: Dictionary = repository_script.load_json_file(
+		"res://content/math/grade1_sem1/borrow_ten.json"
+	)
+	var borrow_ten_errors: PackedStringArray = repository_script.validate_borrow_ten(borrow_ten)
+	_check(borrow_ten_errors.is_empty(), "借十挑战课程 JSON 应通过校验：%s" % ", ".join(borrow_ten_errors))
+	_check(borrow_ten.get("session", {}).get("question_pool", []).size() == 20, "借十挑战应包含二十道受控题目")
+	_check(
+		str(borrow_ten.get("curriculum", {}).get("alignment_status"))
+		== "extension-pending-textbook-page-verification",
+		"借十挑战必须明确标记为教材范围待核验的扩展内容"
+	)
+	var invalid_borrow_ten := borrow_ten.duplicate(true)
+	invalid_borrow_ten["session"]["question_pool"][0] = {"left": 23, "right": 3}
+	_check(
+		not repository_script.validate_borrow_ten(invalid_borrow_ten).is_empty(),
+		"个位够减、不需要借十的题目必须被拒绝"
+	)
 
 
 func _test_question_generator() -> void:
@@ -243,6 +260,40 @@ func _test_question_generator() -> void:
 			_check(
 				int(flat_ten_first[index - 1].get("answer")) != int(question.get("answer")),
 				"相邻平十题不应连续得到相同答案"
+			)
+
+	var borrow_ten_config := ContentRepository.get_borrow_ten_config()
+	var borrow_ten_pool: Array = borrow_ten_config.get("session", {}).get("question_pool", [])
+	var borrow_ten_first := BorrowTenQuestionGenerator.generate_sequence(borrow_ten_pool, 12, 2026)
+	var borrow_ten_second := BorrowTenQuestionGenerator.generate_sequence(borrow_ten_pool, 12, 2026)
+	_check(borrow_ten_first == borrow_ten_second, "借十挑战相同种子必须生成相同题目")
+	_check(borrow_ten_first.size() == 12, "借十挑战应生成指定数量的题目")
+	for index in range(borrow_ten_first.size()):
+		var question: Dictionary = borrow_ten_first[index]
+		_check(int(question.get("ones")) < int(question.get("right")), "借十题必须是个位不够减")
+		_check(
+			int(question.get("borrowed_ones")) == 10 + int(question.get("ones")),
+			"借十题必须把一捆十根拆到个位"
+		)
+		_check(
+			int(question.get("borrowed_ones")) - int(question.get("right"))
+			== int(question.get("ones_left")),
+			"借十题必须从重组后的个位中减去一位数"
+		)
+		_check(
+			int(question.get("tens_left")) * 10 + int(question.get("ones_left"))
+			== int(question.get("answer")),
+			"借十题必须把剩余十位和个位重新合成答案"
+		)
+		_check(
+			int(question.get("left")) - int(question.get("right"))
+			== int(question.get("answer")),
+			"借十题最终答案必须等于原减法算式"
+		)
+		if index > 0:
+			_check(
+				int(borrow_ten_first[index - 1].get("answer")) != int(question.get("answer")),
+				"相邻借十题不应连续得到相同答案"
 			)
 
 

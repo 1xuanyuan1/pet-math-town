@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "id": "borrow_ten",
+  "curriculum": {
+    "region": "上海",
+    "grade": 1,
+    "semester": 1,
+    "publisher": "上海教育出版社",
+    "unit": "两位数减一位数（借十挑战）",
+    "strategy": "借十法",
+    "alignment_status": "extension-pending-textbook-page-verification",
+    "verified_page_refs": []
+  },
+  "session": {
+    "round_count": 5,
+    "maximum_minuend": 32,
+    "question_pool": [
+      {"left": 21, "right": 3},
+      {"left": 21, "right": 5},
+      {"left": 21, "right": 7},
+      {"left": 21, "right": 9},
+      {"left": 22, "right": 4},
+      {"left": 22, "right": 6},
+      {"left": 22, "right": 8},
+      {"left": 22, "right": 9},
+      {"left": 23, "right": 5},
+      {"left": 23, "right": 7},
+      {"left": 23, "right": 9},
+      {"left": 24, "right": 6},
+      {"left": 24, "right": 8},
+      {"left": 24, "right": 9},
+      {"left": 25, "right": 7},
+      {"left": 25, "right": 9},
+      {"left": 26, "right": 8},
+      {"left": 26, "right": 9},
+      {"left": 31, "right": 4},
+      {"left": 32, "right": 5}
+    ]
+  },
+  "prompts": {
+    "question_template": "米米有%d个胡萝卜，要拿走%d个。个位不够减，先借开一捆十根。",
+    "unbundle": "点一下十根一捆的胡萝卜，把它拆开。",
+    "retry_unbundle": "先从十位借一捆十根。",
+    "regrouped": "一捆十根拆开啦！",
+    "take_template": "现在个位有%d个，拿走%d个。",
+    "retry_take": "再看看，个位要拿走几个。",
+    "choose_answer": "把剩下的十位和个位合起来。",
+    "retry_answer": "数一数还剩几捆十根和几个胡萝卜。",
+    "correct": "借十挑战算出来啦！",
+    "complete": "你会把一捆十根拆开来减啦！"
+  }
+}
