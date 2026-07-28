@@ -31,6 +31,7 @@ func _run() -> void:
 	await _test_borrow_ten_round()
 	AudioManager.stop_voice()
 	await get_tree().process_frame
+	await get_tree().create_timer(0.1).timeout
 	if _failures.is_empty():
 		print("TESTS PASSED: %d checks" % _checks)
 		get_tree().quit(0)
@@ -325,9 +326,23 @@ func _test_tts_manifests() -> void:
 	var make_ten_manifest: Dictionary = JSON.parse_string(make_ten_manifest_file.get_as_text())
 	var make_ten_items: Array = make_ten_manifest.get("items", [])
 	_check(make_ten_items.size() == 10, "凑十法应复用四条补十指令和六条固定反馈")
+	var break_ten_manifest_file := FileAccess.open("res://audio/tts/break_ten.json", FileAccess.READ)
+	var break_ten_manifest: Dictionary = JSON.parse_string(break_ten_manifest_file.get_as_text())
+	var break_ten_items: Array = break_ten_manifest.get("items", [])
+	_check(break_ten_items.size() == 13, "破十法应复用六条数量短句和七条固定反馈")
+	var flat_ten_manifest_file := FileAccess.open("res://audio/tts/flat_ten.json", FileAccess.READ)
+	var flat_ten_manifest: Dictionary = JSON.parse_string(flat_ten_manifest_file.get_as_text())
+	var flat_ten_items: Array = flat_ten_manifest.get("items", [])
+	_check(flat_ten_items.size() == 21, "平十法应按两步操作复用自然短句")
+	var borrow_ten_manifest_file := FileAccess.open("res://audio/tts/borrow_ten.json", FileAccess.READ)
+	var borrow_ten_manifest: Dictionary = JSON.parse_string(borrow_ten_manifest_file.get_as_text())
+	var borrow_ten_items: Array = borrow_ten_manifest.get("items", [])
+	_check(borrow_ten_items.size() == 22, "借十挑战应复用两位数和重组个位短句")
 	_check(
 		registry.size()
-		== items.size() + common_items.size() + arithmetic_items.size() + story_items.size() + hub_items.size() + make_ten_items.size() + 2,
+		== items.size() + common_items.size() + arithmetic_items.size() + story_items.size()
+		+ hub_items.size() + make_ten_items.size() + break_ten_items.size()
+		+ flat_ten_items.size() + borrow_ten_items.size() + 2,
 		"Godot 音频注册表应覆盖所有可复用片段、剧情与小主人名"
 	)
 	var seen_ids := {}
@@ -356,6 +371,21 @@ func _test_tts_manifests() -> void:
 		_check(registry.has("make_ten.%s" % str(item.get("id"))), "注册表缺少凑十法片段：%s" % item.get("id"))
 		for name in ["米米", "点点", "团团", "香香", "小宝贝"]:
 			_check(name not in spoken_text, "凑十法固定对白不能录死名称：%s" % name)
+	for strategy_data in [
+		{"prefix": "break_ten", "items": break_ten_items, "label": "破十法"},
+		{"prefix": "flat_ten", "items": flat_ten_items, "label": "平十法"},
+		{"prefix": "borrow_ten", "items": borrow_ten_items, "label": "借十挑战"}
+	]:
+		for item_value in strategy_data.get("items", []):
+			var item: Dictionary = item_value
+			var registry_id := "%s.%s" % [strategy_data.get("prefix"), item.get("id")]
+			var spoken_text := str(item.get("text"))
+			_check(registry.has(registry_id), "注册表缺少策略语音：%s" % registry_id)
+			for name in ["米米", "点点", "团团", "香香", "小宝贝"]:
+				_check(
+					name not in spoken_text,
+					"%s 固定对白不能录死名称：%s" % [strategy_data.get("label"), name]
+				)
 
 	var samples_file := FileAccess.open("res://audio/tts/samples.json", FileAccess.READ)
 	var samples: Dictionary = JSON.parse_string(samples_file.get_as_text())

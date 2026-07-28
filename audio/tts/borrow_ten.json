@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "defaults": {
+    "model": "speech-2.8-hd",
+    "profile": "narrator",
+    "language_boost": "Chinese"
+  },
+  "items": [
+    {"id": "has_21", "text": "有二十一个胡萝卜，", "output": "borrow_ten/has_21.ogg"},
+    {"id": "has_22", "text": "有二十二个胡萝卜，", "output": "borrow_ten/has_22.ogg"},
+    {"id": "has_23", "text": "有二十三个胡萝卜，", "output": "borrow_ten/has_23.ogg"},
+    {"id": "has_24", "text": "有二十四个胡萝卜，", "output": "borrow_ten/has_24.ogg"},
+    {"id": "has_25", "text": "有二十五个胡萝卜，", "output": "borrow_ten/has_25.ogg"},
+    {"id": "has_26", "text": "有二十六个胡萝卜，", "output": "borrow_ten/has_26.ogg"},
+    {"id": "has_31", "text": "有三十一个胡萝卜，", "output": "borrow_ten/has_31.ogg"},
+    {"id": "has_32", "text": "有三十二个胡萝卜，", "output": "borrow_ten/has_32.ogg"},
+    {"id": "unbundle", "text": "个位不够减，先点一捆十根，把它拆开。", "output": "borrow_ten/unbundle.ogg"},
+    {"id": "retry_unbundle", "text": "先从十位借一捆十根。", "output": "borrow_ten/retry_unbundle.ogg", "profile": "mentor"},
+    {"id": "regrouped", "text": "一捆十根拆开啦！", "output": "borrow_ten/regrouped.ogg", "profile": "reward"},
+    {"id": "ones_now_11", "text": "现在个位有十一个胡萝卜。", "output": "borrow_ten/ones_now_11.ogg"},
+    {"id": "ones_now_12", "text": "现在个位有十二个胡萝卜。", "output": "borrow_ten/ones_now_12.ogg"},
+    {"id": "ones_now_13", "text": "现在个位有十三个胡萝卜。", "output": "borrow_ten/ones_now_13.ogg"},
+    {"id": "ones_now_14", "text": "现在个位有十四个胡萝卜。", "output": "borrow_ten/ones_now_14.ogg"},
+    {"id": "ones_now_15", "text": "现在个位有十五个胡萝卜。", "output": "borrow_ten/ones_now_15.ogg"},
+    {"id": "ones_now_16", "text": "现在个位有十六个胡萝卜。", "output": "borrow_ten/ones_now_16.ogg"},
+    {"id": "retry_take", "text": "再看看，个位要拿走几个。", "output": "borrow_ten/retry_take.ogg", "profile": "mentor"},
+    {"id": "choose_answer", "text": "把剩下的十位和个位合起来。", "output": "borrow_ten/choose_answer.ogg"},
+    {"id": "retry_answer", "text": "数一数还剩几捆十根和几个胡萝卜。", "output": "borrow_ten/retry_answer.ogg", "profile": "mentor"},
+    {"id": "correct", "text": "借十挑战算出来啦！", "output": "borrow_ten/correct.ogg", "profile": "reward"},
+    {"id": "complete", "text": "你会把一捆十根拆开来减啦！", "output": "borrow_ten/complete.ogg", "profile": "reward"}
+  ]
+}

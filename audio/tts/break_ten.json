@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "defaults": {
+    "model": "speech-2.8-hd",
+    "profile": "narrator",
+    "language_boost": "Chinese"
+  },
+  "items": [
+    {"id": "has_11", "text": "有十一个胡萝卜，", "output": "break_ten/has_11.ogg"},
+    {"id": "retry_take", "text": "再看看，一共要拿走几个胡萝卜。", "output": "break_ten/retry_take.ogg", "profile": "mentor"},
+    {"id": "correct", "text": "破十法算出来啦！", "output": "break_ten/correct.ogg", "profile": "reward"},
+    {"id": "has_12", "text": "有十二个胡萝卜，", "output": "break_ten/has_12.ogg"},
+    {"id": "has_13", "text": "有十三个胡萝卜，", "output": "break_ten/has_13.ogg"},
+    {"id": "has_14", "text": "有十四个胡萝卜，", "output": "break_ten/has_14.ogg"},
+    {"id": "has_15", "text": "有十五个胡萝卜，", "output": "break_ten/has_15.ogg"},
+    {"id": "has_16", "text": "有十六个胡萝卜，", "output": "break_ten/has_16.ogg"},
+    {"id": "take_from_ten", "text": "先从十格篮子里拿。", "output": "break_ten/take_from_ten.ogg"},
+    {"id": "broke_ten", "text": "十格篮子里拿好啦！", "output": "break_ten/broke_ten.ogg", "profile": "reward"},
+    {"id": "combine_left", "text": "把篮子里剩下的和外面的合起来。", "output": "break_ten/combine_left.ogg"},
+    {"id": "retry_answer", "text": "把两边剩下的胡萝卜合起来，再数一数。", "output": "break_ten/retry_answer.ogg", "profile": "mentor"},
+    {"id": "complete", "text": "你会用破十法啦！", "output": "break_ten/complete.ogg", "profile": "reward"}
+  ]
+}

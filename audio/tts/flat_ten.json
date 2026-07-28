@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "defaults": {
+    "model": "speech-2.8-hd",
+    "profile": "narrator",
+    "language_boost": "Chinese"
+  },
+  "items": [
+    {"id": "first_take_01", "text": "先拿走一个胡萝卜，正好剩十个。", "output": "flat_ten/first_take_01.ogg"},
+    {"id": "first_take_02", "text": "先拿走两个胡萝卜，正好剩十个。", "output": "flat_ten/first_take_02.ogg"},
+    {"id": "first_take_03", "text": "先拿走三个胡萝卜，正好剩十个。", "output": "flat_ten/first_take_03.ogg"},
+    {"id": "first_take_04", "text": "先拿走四个胡萝卜，正好剩十个。", "output": "flat_ten/first_take_04.ogg"},
+    {"id": "first_take_05", "text": "先拿走五个胡萝卜，正好剩十个。", "output": "flat_ten/first_take_05.ogg"},
+    {"id": "first_take_06", "text": "先拿走六个胡萝卜，正好剩十个。", "output": "flat_ten/first_take_06.ogg"},
+    {"id": "reached_ten", "text": "正好剩十个！", "output": "flat_ten/reached_ten.ogg", "profile": "reward"},
+    {"id": "second_take_01", "text": "还要再拿走一个胡萝卜。", "output": "flat_ten/second_take_01.ogg"},
+    {"id": "second_take_02", "text": "还要再拿走两个胡萝卜。", "output": "flat_ten/second_take_02.ogg"},
+    {"id": "second_take_03", "text": "还要再拿走三个胡萝卜。", "output": "flat_ten/second_take_03.ogg"},
+    {"id": "second_take_04", "text": "还要再拿走四个胡萝卜。", "output": "flat_ten/second_take_04.ogg"},
+    {"id": "second_take_05", "text": "还要再拿走五个胡萝卜。", "output": "flat_ten/second_take_05.ogg"},
+    {"id": "second_take_06", "text": "还要再拿走六个胡萝卜。", "output": "flat_ten/second_take_06.ogg"},
+    {"id": "second_take_07", "text": "还要再拿走七个胡萝卜。", "output": "flat_ten/second_take_07.ogg"},
+    {"id": "second_take_08", "text": "还要再拿走八个胡萝卜。", "output": "flat_ten/second_take_08.ogg"},
+    {"id": "retry_first_take", "text": "看看十外面有几个胡萝卜，先把它们拿走。", "output": "flat_ten/retry_first_take.ogg", "profile": "mentor"},
+    {"id": "retry_second_take", "text": "还要再拿走几个？", "output": "flat_ten/retry_second_take.ogg", "profile": "mentor"},
+    {"id": "choose_answer", "text": "看看十格里还剩几个胡萝卜。", "output": "flat_ten/choose_answer.ogg"},
+    {"id": "retry_answer", "text": "数一数十格里剩下的胡萝卜。", "output": "flat_ten/retry_answer.ogg", "profile": "mentor"},
+    {"id": "correct", "text": "平十法算出来啦！", "output": "flat_ten/correct.ogg", "profile": "reward"},
+    {"id": "complete", "text": "你会用平十法啦！", "output": "flat_ten/complete.ogg", "profile": "reward"}
+  ]
+}
