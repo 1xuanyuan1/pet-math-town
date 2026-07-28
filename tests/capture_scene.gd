@@ -45,6 +45,22 @@ func _ready() -> void:
 					game.call("_on_ten_carrot_pressed", slot_index)
 				game.call("_on_take_confirmed")
 				await get_tree().process_frame
+		elif requested_view in ["flat_ten_first", "flat_ten_second", "flat_ten_answer"]:
+			main.call("_show_flat_ten")
+			await get_tree().process_frame
+			await get_tree().process_frame
+			if requested_view in ["flat_ten_second", "flat_ten_answer"]:
+				var game := main.get("_current_view") as Control
+				var question: Dictionary = game.call("_current_question")
+				for loose_index in range(int(question.get("to_ten"))):
+					game.call("_on_loose_carrot_pressed", loose_index)
+				game.call("_on_confirm_pressed")
+				await get_tree().process_frame
+				if requested_view == "flat_ten_answer":
+					for slot_index in range(int(question.get("remainder"))):
+						game.call("_on_ten_carrot_pressed", slot_index)
+					game.call("_on_confirm_pressed")
+					await get_tree().process_frame
 		else:
 			var selected_count := clampi(int(requested_view), 0, 10)
 			var game := main.get_child(0)
