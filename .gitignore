@@ -7,5 +7,6 @@ build/web/*
 !build/web/.gitkeep
 build/android/*
 !build/android/.gitkeep
+build/toy/
 audio/tts/_samples/
 output/
