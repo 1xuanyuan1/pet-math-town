@@ -6,6 +6,7 @@
 ## 在线试玩与下载
 
 - [浏览器在线试玩](https://1xuanyuan1.github.io/pet-math-town/)
+- [B 站 Toy 在线试玩](https://www.bilibili.com/toy/pet-math-town/index.html)
 - [v0.1.0 Android APK](https://github.com/1xuanyuan1/pet-math-town/releases/tag/v0.1.0)
 
 当前 Android 包是适合家长试玩验证的 arm64 调试签名 APK，尚不是应用商店正式签名包。
