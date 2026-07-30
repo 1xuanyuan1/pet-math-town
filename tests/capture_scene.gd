@@ -19,6 +19,10 @@ func _ready() -> void:
 			main.call("_show_strategy_hub")
 			await get_tree().process_frame
 			await get_tree().process_frame
+		elif requested_view == "counting":
+			main.call("_show_count_feeding")
+			await get_tree().process_frame
+			await get_tree().process_frame
 		elif requested_view in ["addition", "subtraction"]:
 			main.call("_show_arithmetic", requested_view)
 			await get_tree().process_frame
@@ -78,7 +82,10 @@ func _ready() -> void:
 					await get_tree().process_frame
 		else:
 			var selected_count := clampi(int(requested_view), 0, 10)
-			var game := main.get_child(0)
+			main.call("_show_count_feeding")
+			await get_tree().process_frame
+			await get_tree().process_frame
+			var game := main.get("_current_view") as Control
 			for index in range(selected_count):
 				game.call("_on_supply_pressed", index)
 			await get_tree().process_frame
