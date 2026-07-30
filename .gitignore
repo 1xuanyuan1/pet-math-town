@@ -8,5 +8,7 @@ build/web/*
 build/android/*
 !build/android/.gitkeep
 build/toy/
+android/
+docs/google-play/assets/*.import
 audio/tts/_samples/
 output/
