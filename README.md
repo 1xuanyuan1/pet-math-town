@@ -8,9 +8,16 @@
 - [浏览器在线试玩](https://1xuanyuan1.github.io/pet-math-town/)
 - [B 站 Toy 在线试玩](https://www.bilibili.com/toy/pet-math-town/index.html)
 - [v0.1.0 Android APK](https://github.com/1xuanyuan1/pet-math-town/releases/tag/v0.1.0)
+- [隐私政策](https://1xuanyuan1.github.io/pet-math-town/privacy.html)
 
 当前 Android 包是适合家长试玩验证的 arm64 调试签名 APK，尚不是应用商店正式签名包。
 借十法暂作为教材范围待核验的扩展挑战，不标记为已经确认的一年级上册主线内容。
+
+## Google Play 发布
+
+项目已准备独立的 `Android Play AAB` 发布预设、仓库外上传密钥、简体中文商店资料和经过尺寸校验的商店图片。候选包固定为 `com.xuanyuan.petmathtown`、`0.1.0 (1)`、arm64、min SDK 24、target SDK 36。
+
+当前流程停在 Google Play 内部测试发布前；内部测试通过后，个人开发者账号仍需至少 12 名测试者持续参加封闭测试满 14 天，才能申请正式版权限。发布资料和复现步骤见 [`docs/google-play/README.md`](docs/google-play/README.md)。
 
 ## 本地运行
 
