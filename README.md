@@ -17,7 +17,7 @@
 
 项目已准备独立的 `Android Play AAB` 发布预设、仓库外上传密钥、简体中文商店资料和经过尺寸校验的商店图片。候选包固定为 `com.xuanyuan.petmathtown`、`0.1.0 (1)`、arm64、min SDK 24、target SDK 36。
 
-当前流程停在 Google Play 内部测试发布前；内部测试通过后，个人开发者账号仍需至少 12 名测试者持续参加封闭测试满 14 天，才能申请正式版权限。发布资料和复现步骤见 [`docs/google-play/README.md`](docs/google-play/README.md)。
+`0.1.0 (1)` 已发布到有效的 Google Play 内部测试轨道；获准邮箱可通过[内部测试加入页](https://play.google.com/apps/internaltest/4701571769397259574)参与测试。下一阶段仍需至少 12 名测试者持续参加封闭测试满 14 天，才能申请正式版权限。发布资料和复现步骤见 [`docs/google-play/README.md`](docs/google-play/README.md)。
 
 ## 本地运行
 
